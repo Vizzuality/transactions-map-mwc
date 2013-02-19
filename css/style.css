@@ -1,0 +1,42 @@
+
+.mapContainer{
+   position: absolute;
+   bottom: 100px;
+   top: 0;
+   z-index: 1;
+}
+
+.mapContainer h2{
+  position: absolute;
+  bottom: 100px;
+  z-index: 2;
+  font-family: 'proxima-nova', Helvetica, Arial, Sans-serif;
+  font-size: 17px;
+  color: #FFF;
+  font-weight: regular;
+  /*font-weight: 600;*/
+  line-height: 21px;
+  width: 250px;
+  text-shadow: 0 0 5px #000;
+}
+
+.left{
+  left: 0;
+  right: 50%;
+}
+
+.right{
+  left: 50%;
+  right: 0;
+}
+
+.vseparator{
+  position: absolute;
+  top: 0;
+  bottom: 100px;
+  left: 50%;
+  width: 4px;
+  background-color: #FFF;
+  z-index: 2;
+}
+
