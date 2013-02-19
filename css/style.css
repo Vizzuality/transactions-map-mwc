@@ -8,16 +8,17 @@
 
 .mapContainer h2{
   position: absolute;
-  bottom: 100px;
+  bottom: 30px;
+  left: 30px;
   z-index: 2;
-  font-family: 'proxima-nova', Helvetica, Arial, Sans-serif;
+  font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif;
   font-size: 17px;
   color: #FFF;
   font-weight: regular;
-  /*font-weight: 600;*/
   line-height: 21px;
-  width: 250px;
+  width: 290px;
   text-shadow: 0 0 5px #000;
+  margin: 0;
 }
 
 .left{

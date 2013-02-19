@@ -3,7 +3,7 @@
 <svg xmlns="http://www.w3.org/2000/svg">
 <metadata></metadata>
 <defs>
-<font id="proxima_nova_ltbold" horiz-adv-x="1175" >
+<font id="proxima_novasemibold" horiz-adv-x="1175" >
 <font-face units-per-em="2048" ascent="1618" descent="-430" />
 <missing-glyph horiz-adv-x="528" />
 <glyph unicode="&#xfb01;" horiz-adv-x="1126" d="M29 803v186h164v55q0 162 86 252t225 90q109 0 174 -36l-47 -162q-36 22 -86 22q-66 0 -101.5 -42t-35.5 -124v-55h200v-186h-200v-803h-215v803h-164zM748 1243q0 55 39 94t94 39t94 -39t39 -94t-39 -94t-94 -39t-94 39t-39 94zM772 0v989h215v-989h-215z" />
