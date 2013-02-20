@@ -14,16 +14,16 @@
       <a href="#">?</a>
     </div>
     
-    <div class="mapContainer left">
+    <div class="mapContainer left moveUpAnimate">
       <h2>BANK TRANSACTIONS DURING THE PREVIOUS WEEK</h2>
       <div id="map1" class="map"></div>
     </div>
-    <div class="mapContainer right">
+    <div class="mapContainer right moveUpAnimate">
       <h2>BANK TRANSACTIONS</br>DURING THE MWC12</h2>
       <div id="map2" class="map"></div>
     </div>
     
-    <div id="dateControl">
+    <div id="dateControl" class="moveUpAnimate">
       <ul>
         <li><span>MON</span></li>
         <li><div id="dayvsnight"></div></li>
@@ -31,12 +31,18 @@
       </ul>
     </div>
 
-    <div class="vseparator"></div>
+    <div class="vseparator moveUpAnimate"></div>
 
-    <div id="bottomArea">
+    <div id="bottomArea" class="expandAnimate">
       <div class="chartsArea"></div>
-      <div class="menuBar">
-        <a href="#">MORE MAPS</a>
+      <div class="menuBar expandAnimate">
+        <a href="#" class="swtichButton">MORE MAPS</a>
+        <div id="buttonContainer">
+          <ul>
+            <li><a href="#" class="time selected"><span></span>TRANSACTIONS</br>OVER TIME</a></li>
+            <li><a href="#" class="static"><span></span>TOTAL</br>TRANSACTIONS</a></li>
+          </ul>
+        </div>
       </div>
     </div>
 
