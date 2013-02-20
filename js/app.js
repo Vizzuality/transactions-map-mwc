@@ -37,7 +37,7 @@ function changeMapState(src,tgt){
 //Toggle menubar.
 function toggleMenu(){
   var _tgt = (showing_menu) ? '-' : '+';
-  var _td = (showing_menu) ? 250 : 0;
+  var _td = (showing_menu) ? 200 : 0;
   showing_menu = !showing_menu;
   $('.moveUpAnimate').animate({
     bottom: _tgt+'='+MENU_TOGGLE_SIZE},
@@ -46,5 +46,5 @@ function toggleMenu(){
     height: _tgt+'='+MENU_TOGGLE_SIZE},
     350);
   $('.swtichButton').delay(_td).fadeToggle(150);
-  $('#buttonContainer').delay(_td).fadeToggle(600);
+  $('#buttonContainer').delay(_td).fadeToggle(150);
 }
