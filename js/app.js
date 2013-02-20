@@ -55,8 +55,14 @@ function toggleMenu(){
 //Toggle map type and mark selected item
 function toggleMaps(e){
   var $a = $(e.target).closest('a')
+  dynamic = !dynamic;
+  if($a.hasClass('selected')){
+    return;
+  }
   $('#buttonContainer ul li a').removeClass('selected');
   $a.addClass('selected');
-  dynamic = !dynamic;
+  var $el = (dynamic) ? $('#clock') : $('#daySelector')
+  $('#dateControl').contents().hide();
+  $el.show();
   toggleMenu();
 }

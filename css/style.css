@@ -13,10 +13,12 @@ body{font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; margin: 
 .aboutTab a, .aboutTab a:visited{position: absolute; bottom: 7px; background-color: #ddd; -webkit-border-radius: 20px; -moz-border-radius: 20px; border-radius: 20px; padding: 5px 10px 2px 10px; margin: 12px 0 0 6px; text-decoration: none; color: #FFF;}
 .aboutTab a:hover{background-color: #333;}
 
-#dateControl{display: block; position: absolute; bottom: 136px; left: 50%; z-index: 2; width: 192px; height: 50px; background-color:#FFF; border: 1px solid #111; -webkit-border-radius: 30px;-moz-border-radius: 30px;border-radius: 30px; margin: 0 0 0 -96px;}
-#dateControl ul{padding: 0; margin: 12px 0 auto 7px;}
+#dateControl{display: block; position: absolute; bottom: 136px; left: 50%; z-index: 2; width: 192px; height: 50px; background-color:#FFF; border: 1px solid #111; -webkit-border-radius: 30px;-moz-border-radius: 30px;border-radius: 30px; margin: 0 0 0 -96px; text-align: center;}
+#dateControl ul{padding: 0; margin: 12px 0 auto 0;}
 #dateControl ul li{list-style-type: none; display: inline-block; vertical-align: middle;}
-#dateControl ul li span{display: block; font-family: 'proxima_nova_rgbold', Helvetica, Arial, Sans-serif; color: #333; text-align: center; width: 70px; padding-top: 2px;}
+#dateControl ul li span{display: block; font-family: 'proxima_nova_rgbold', Helvetica, Arial, Sans-serif; color: #333; text-align: center; width: 68px; padding-top: 2px;}
+
+#daySelector{width: 150px; margin: 17px 0 0 0; display: none;}
 
 #dayvsnight{
   display: block;
@@ -31,55 +33,14 @@ body{font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; margin: 
 #bottomArea .menuBar a.swtichButton, #bottomArea .menuBar a.swtichButton:visited{display: block; width: 100%; font-family: 'proxima_nova_rgbold', Helvetica, Arial, Sans-serif; font-size: 13px; color: #999; text-decoration: none; line-height: 40px;}
 #bottomArea .menuBar a.swtichButton:hover{color:#333;}
 
-
 #buttonContainer{margin: 42px 0 0 0; display:none;}
 #buttonContainer ul{padding: 0;}
 #buttonContainer ul li{list-style-type: none; display: inline-block; margin: 0 6px 0 0;}
-
-#buttonContainer ul li a, #buttonContainer ul li a:visited{
-  position: relative;
-  font-family: 'proxima_nova_rgbold', Helvetica, Arial, Sans-serif;
-  display: block;
-  max-width: 200px;
-  font-size: 13px;
-  color: #333;
-  -webkit-border-radius: 8px; -moz-border-radius: 8px; border-radius: 8px;
-  padding: 113px 40px 17px 40px;
-  text-decoration: none;
-  line-height: 15px;
-}
-
-#buttonContainer ul li a:hover{
-  background-color: #E5E5E5;
-}
-
-#buttonContainer ul li a.selected{
-  color: #BBBBBB;
-  background-color: #E5E5E5;
-}
-
-#buttonContainer ul li a span{
-  position: absolute;
-  top: 24px;
-  left: 50%;
-  margin: 0 0 0 -35px;
-  display: block;
-  width: 71px;
-  height: 71px;
-}
-
-#buttonContainer ul li a.static span{
-  background:transparent url('../assets/img/icons.png') no-repeat 0 0;
-}
-
-#buttonContainer ul li a.static.selected span{
-  background:transparent url('../assets/img/icons.png') no-repeat 0 -71px;
-}
-
-#buttonContainer ul li a.time span{
-  background:transparent url('../assets/img/icons.png') no-repeat -71px 0;
-}
-
-#buttonContainer ul li a.time.selected span{
-  background:transparent url('../assets/img/icons.png') no-repeat -71px -71px;
-}
+#buttonContainer ul li a, #buttonContainer ul li a:visited{position: relative; font-family: 'proxima_nova_rgbold', Helvetica, Arial, Sans-serif; display: block; max-width: 200px; font-size: 13px; color: #333; -webkit-border-radius: 8px; -moz-border-radius: 8px; border-radius: 8px; padding: 113px 40px 17px 40px; text-decoration: none; line-height: 15px;}
+#buttonContainer ul li a:hover{background-color: #E5E5E5;}
+#buttonContainer ul li a.selected{color: #BBBBBB; background-color: #E5E5E5;}
+#buttonContainer ul li a span{position: absolute; top: 24px; left: 50%; margin: 0 0 0 -35px; display: block; width: 71px; height: 71px;}
+#buttonContainer ul li a.static span{background:transparent url('../assets/img/icons.png') no-repeat 0 0;}
+#buttonContainer ul li a.static.selected span{background:transparent url('../assets/img/icons.png') no-repeat 0 -71px;}
+#buttonContainer ul li a.time span{background:transparent url('../assets/img/icons.png') no-repeat -71px 0;}
+#buttonContainer ul li a.time.selected span{background:transparent url('../assets/img/icons.png') no-repeat -71px -71px;}
