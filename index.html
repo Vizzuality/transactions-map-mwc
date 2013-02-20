@@ -9,14 +9,52 @@
     <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
   </head>
   <body>
-    <div class="mapContainer left">
+    
+    <div class="aboutTab">
+      <a href="#">?</a>
+    </div>
+    
+    <div class="mapContainer left moveUpAnimate">
       <h2>BANK TRANSACTIONS DURING THE PREVIOUS WEEK</h2>
       <div id="map1" class="map"></div>
     </div>
-    <div class="vseparator"></div>
-    <div class="mapContainer right">
-      <h2>BANK TRANSACTIONS DURING THE MWC12</h2>
+    <div class="mapContainer right moveUpAnimate">
+      <h2>BANK TRANSACTIONS</br>DURING THE MWC12</h2>
       <div id="map2" class="map"></div>
+    </div>
+    
+    <div id="dateControl" class="moveUpAnimate">
+      <ul id="clock">
+        <li><span>MON</span></li>
+        <li><div id="dayvsnight"></div></li>
+        <li><span>21:00h</span></li>
+      </ul>
+      <div id="daySelector">
+        <select>
+          <option value="SUN">Sunday</option>
+          <option value="MON">Monday</option>
+          <option value="TUE">Tuesday</option>
+          <option value="WED">Wednesday</option>
+          <option value="THU">Thursday</option>
+          <option value="FRI">Friday</option>
+          <option value="SAT">Saturday</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="vseparator moveUpAnimate"></div>
+
+    <div id="bottomArea" class="expandAnimate">
+      <div class="chartsArea"></div>
+      <div class="menuBar expandAnimate">
+        <a href="#" class="swtichButton">MORE MAPS</a>
+        <div id="buttonContainer">
+          <ul>
+            <li><a href="#" class="time selected"><span></span>TRANSACTIONS</br>OVER TIME</a></li>
+            <li><a href="#" class="static"><span></span>TOTAL</br>TRANSACTIONS</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
 
     <script src="js/app.js"></script>
