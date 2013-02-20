@@ -4,6 +4,8 @@ var MENU_TOGGLE_SIZE = 210;
 
 var mapL,mapR;
 var showing_menu = false;
+var dynamic = true;
+
 var staticMapsURLs = {
   staticDefault: 'http://saleiva2.cartodb.com/api/v1/viz/186/viz.json'
 }
@@ -27,24 +29,34 @@ cartodb.createVis('map2', staticMapsURLs.staticDefault, {
   return;
 });
 
-$('.menuBar a').bind('click', function(){toggleMenu()});
+$('.menuBar a.swtichButton').bind('click', function(){toggleMenu()});
+$('#buttonContainer ul li a').bind('click', toggleMaps);
 
 //Applies the same view from src to tgt map
 function changeMapState(src,tgt){
   tgt.setView(src.getCenter(), src.getZoom());
 }
 
-//Toggle menubar.
+//Toggle menubar visibility
 function toggleMenu(){
   var _tgt = (showing_menu) ? '-' : '+';
   var _td = (showing_menu) ? 200 : 0;
   showing_menu = !showing_menu;
   $('.moveUpAnimate').animate({
     bottom: _tgt+'='+MENU_TOGGLE_SIZE},
-    350);
+  350);
   $('.expandAnimate').animate({
     height: _tgt+'='+MENU_TOGGLE_SIZE},
-    350);
+  350);
   $('.swtichButton').delay(_td).fadeToggle(150);
-  $('#buttonContainer').delay(_td).fadeToggle(150);
+  $('#buttonContainer').delay(_td).fadeToggle(100);
+}
+
+//Toggle map type and mark selected item
+function toggleMaps(e){
+  var $a = $(e.target).closest('a')
+  $('#buttonContainer ul li a').removeClass('selected');
+  $a.addClass('selected');
+  dynamic = !dynamic;
+  toggleMenu();
 }
