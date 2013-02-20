@@ -9,15 +9,29 @@
     <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
   </head>
   <body>
+    
+    <div class="aboutTab">
+      <a href="#">?</>
+    </div>
+    
     <div class="mapContainer left">
       <h2>BANK TRANSACTIONS DURING THE PREVIOUS WEEK</h2>
       <div id="map1" class="map"></div>
     </div>
-    <div class="vseparator"></div>
     <div class="mapContainer right">
       <h2>BANK TRANSACTIONS DURING THE MWC12</h2>
       <div id="map2" class="map"></div>
     </div>
+    
+    <div id="dateControl">
+      <ul>
+        <li><span>MON</span></li>
+        <li><div id="dayvsnight"></div></li>
+        <li><span>21:00h</span></li>
+      </ul>
+    </div>
+
+    <div class="vseparator"></div>
 
     <script src="js/app.js"></script>
   </body>
