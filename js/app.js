@@ -1,7 +1,7 @@
 
-BALLS_COLOR = 'rgba(0, 255,255, 0.12)';
+BALLS_COLOR = 'rgba(0, 255,255, 0.06)';
 BALL_SIZE_GAIN = 1; // ball size is greater when this value is increased
-BALL_ANIMATION_SPEED = 2.5; // no more than 5
+BALL_ANIMATION_SPEED = 2; // no more than 5
 
 var MENU_TOGGLE_SIZE = 210;
 var staticMapsURLs = {
@@ -46,6 +46,7 @@ Map.prototype.init = function(done) {
         cartodb_logo: false
   }).done(function(vis, layers) {
     self.map = vis.getNativeMap();
+    self.zoom = vis.getOverlay('zoom');
     self.staticLayer = layers[1];
     self.dinamycLayer = new L.TimeLayer(options);
 
@@ -152,7 +153,7 @@ mapL.init(function() {
     mapR.map.on('moveend', function(e) {
         changeMapState(mapR.map, mapL.map)
     });
-
+    mapR.zoom.clean();
     animation = new AnimationController([mapL, mapR]);
     animation.play();
   })
