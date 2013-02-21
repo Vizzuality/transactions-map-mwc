@@ -45,9 +45,6 @@ L.CanvasLayer = L.Class.extend({
       //map.on('zoomanim', this._animateZoom, this);
     //}
     //
-    this.on('tileAdded', function(t) {
-      console.log(t);
-    });
     this._initTileLoader();
 
     this._reset();
@@ -101,7 +98,7 @@ L.CanvasLayer = L.Class.extend({
   _updateOpacity: function () { },
 
   _update: function() {
-    requestAnimationFrame(this._render);
+    //requestAnimationFrame(this._render);
   },
 
   _render: function() {
