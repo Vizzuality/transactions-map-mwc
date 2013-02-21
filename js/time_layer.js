@@ -40,6 +40,7 @@ L.TimeLayer = L.CanvasLayer.extend({
     this.entities = new Entities(5000);
     this.time = 0;
     this.queue = [];
+    this.realTime = 0.0;
   },
 
   sql: function(sql, callback) {
@@ -53,14 +54,14 @@ L.TimeLayer = L.CanvasLayer.extend({
 
   get_time_range: function(callback) {
     var self = this;
-    if(self.options.MIN_DATE != undefined) callback(self.options.MIN_DATE);
+    if(self.options.start_date != undefined) callback(self.options.start_date);
 
     var sql = "SELECT st_xmax(st_envelope(st_collect(the_geom))) xmax,st_ymax(st_envelope(st_collect(the_geom))) ymax, st_xmin(st_envelope(st_collect(the_geom))) xmin, st_ymin(st_envelope(st_collect(the_geom))) ymin, date_part('epoch',max({0})) max, date_part('epoch',min({0})) min FROM {1}".format(this.options.column, this.options.table);
 
     this.sql(sql, function (data) {
       var p = data.rows[0];
-      self.options.MIN_DATE = p.min;
-      callback(self.options.MIN_DATE);
+      self.options.start_date = p.min;
+      callback(self.options.start_date);
           //p.max
     });
 
@@ -80,33 +81,30 @@ L.TimeLayer = L.CanvasLayer.extend({
     // take se and sd as a matrix [se|sd]
     var numTiles = 1 << zoom;
 
-    //var prof = Profiler.get('tile fetch');
-    //prof.start();
-    this.get_time_range(function() {
-      var sql = "WITH hgrid AS ( " +
-      "    SELECT CDB_RectangleGrid( " +
-      "       CDB_XYZ_Extent({0}, {1}, {2}), ".format(coord.x, coord.y, zoom) +
-      "       CDB_XYZ_Resolution({0}) * {1}, ".format(zoom, self.options.resolution) +
-      "       CDB_XYZ_Resolution({0}) * {1} ".format(zoom, self.options.resolution) +
-      "    ) as cell " +
-      " ) " +
-      " SELECT  " +
-      "    x, y, array_agg(c) vals, array_agg(d) dates " +
-      " FROM ( " +
-      "    SELECT " +
-      "      round(CAST (st_xmax(hgrid.cell) AS numeric),4) x, round(CAST (st_ymax(hgrid.cell) AS numeric),4) y, " +
-      "      {0} c, floor((date_part('epoch',{1})- {2})/{3}) d ".format(self.options.countby, self.options.column, self.options.MIN_DATE, self.options.step) +
-      "    FROM " +
-      "        hgrid, {0} i ".format(self.options.table) +
-      "    WHERE " +
-      "        ST_Intersects(i.the_geom_webmercator, hgrid.cell) " +
-      "    GROUP BY " +
-      "        hgrid.cell, floor((date_part('epoch',{0})- {1})/{2})".format(self.options.column, self.options.MIN_DATE, self.options.step) +
-      " ) f GROUP BY x, y";
-      self.sql(sql, function (data) {
-        var time_data = self.pre_cache_months(data.rows, coord, zoom);
-        self._tileLoaded(coord, time_data);
-      });
+    var sql = "WITH hgrid AS ( " +
+    "    SELECT CDB_RectangleGrid( " +
+    "       CDB_XYZ_Extent({0}, {1}, {2}), ".format(coord.x, coord.y, zoom) +
+    "       CDB_XYZ_Resolution({0}) * {1}, ".format(zoom, self.options.resolution) +
+    "       CDB_XYZ_Resolution({0}) * {1} ".format(zoom, self.options.resolution) +
+    "    ) as cell " +
+    " ) " +
+    " SELECT  " +
+    "    x, y, array_agg(c) vals, array_agg(d) dates " +
+    " FROM ( " +
+    "    SELECT " +
+    "      round(CAST (st_xmax(hgrid.cell) AS numeric),4) x, round(CAST (st_ymax(hgrid.cell) AS numeric),4) y, " +
+    "      {0} c, floor((date_part('epoch',{1})- {2})/{3}) d ".format(self.options.countby, self.options.column, self.options.start_date, self.options.step) +
+    "    FROM " +
+    "        hgrid, {0} i ".format(self.options.table) +
+    "    WHERE " +
+    "        ST_Intersects(i.the_geom_webmercator, hgrid.cell) " +
+    "        AND date_part('epoch',i.{0}) > {1} ".format(self.options.column, self.options.start_date) + 
+    "    GROUP BY " +
+    "        hgrid.cell, floor((date_part('epoch',{0})- {1})/{2})".format(self.options.column, self.options.start_date, self.options.step) +
+    " ) f GROUP BY x, y";
+    self.sql(sql, function (data) {
+      var time_data = self.pre_cache_months(data.rows, coord, zoom);
+      self._tileLoaded(coord, time_data);
     });
   },
 
@@ -171,9 +169,7 @@ L.TimeLayer = L.CanvasLayer.extend({
    */
   play: function() {
     this.playing = true;
-    this.realTime = 0.0;
-    this.previous_time = new Date().getTime();
-    requestAnimationFrame(this._render);
+    //requestAnimationFrame(this._render);
   },
 
   _renderTile: function(tile, origin) {
@@ -188,10 +184,7 @@ L.TimeLayer = L.CanvasLayer.extend({
       }
   },
 
-  _render: function() {
-    var now = new Date().getTime();
-    var delta =  0.001*(now - this.previous_time);
-    this.previous_time = now;
+  _render: function(delta) {
     this._canvas.width = this._canvas.width;
     var origin = this._map._getNewTopLeftPoint(this._map.getCenter(), this._map.getZoom());
     this._ctx.translate(-origin.x, -origin.y);
@@ -219,10 +212,13 @@ L.TimeLayer = L.CanvasLayer.extend({
       }
     }
 
-    document.getElementById('counter').innerHTML = new Date(1000*(this.options.MIN_DATE + this.time*15*60));
+  },
 
-    requestAnimationFrame(this._render);
+  getTime: function() {
+    return new Date(1000*(this.options.start_date + this.time*15*60));
   }
+
+
 
 });
 

@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="css/fonts.css" />
     <link rel="stylesheet" href="css/style.css" />
     <script src="http://libs.cartocdn.com/cartodb.js/v2/cartodb.js"></script>
+    <script src="js/leaflet_tileloader_mixin.js"></script>
+    <script src="js/canvas_layer.js"></script>
+    <script src="js/time_layer.js"></script>
   </head>
   <body>
     
@@ -25,9 +28,9 @@
     
     <div id="dateControl" class="moveUpAnimate">
       <ul id="clock">
-        <li><span>MON</span></li>
+        <li><span id="day">MON</span></li>
         <li><div id="dayvsnight"></div></li>
-        <li><span>21:00h</span></li>
+        <li><span id="hour">21:00h</span></li>
       </ul>
       <div id="daySelector">
         <select>

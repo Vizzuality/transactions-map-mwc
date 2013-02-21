@@ -1,49 +1,155 @@
 
-
 var MENU_TOGGLE_SIZE = 210;
-
-var mapL,mapR,layerL,layerR;
-var showing_menu = false;
-var dynamic = true;
-
 var staticMapsURLs = {
   staticDefault: 'http://saleiva2.cartodb.com/api/v1/viz/186/viz.json'
 }
 
-var dates = {
-  SUN: ['19','26'],
-  MON: ['20','27'],
-  TUE: ['21','28'],
-  WED: ['22','29'],
-  THU: ['23','01'],
-  FRI: ['24','02'],
-  SAT: ['25','03']
+
+/** 
+ * map class
+ */
+
+function Map(options) {
+  this.map = null;
+  this.staticLayer = null;
+  this.options = options;
 }
+
+Map.prototype.init = function(done) {
+  var self = this;
+
+  var options = {
+    user : "saleiva2",
+    table : "mwc_torque",
+    column : "date",
+    blendmode : 'source-over',
+    trails : false,
+    point_type : 'square',
+    cumulative : true,
+    resolution : 2,
+    steps : 750,
+    step: 15*60,
+    fps : 30,
+    fitbounds : 1,
+    clock : true,
+    countby:'sum(i.amount)',
+    start_date: (new Date(2012, 1, parseInt(this.options.dates[this.options.day], 10)).getTime()/1000)>>0
+  }
+
+  cartodb.createVis(this.options.el, staticMapsURLs.staticDefault, {
+        sql: this._queryForDay(this.options.day),
+        cartodb_logo: false
+  }).done(function(vis, layers) {
+    self.map = vis.getNativeMap();
+    self.staticLayer = layers[1];
+    self.dinamycLayer = new L.TimeLayer(options);
+
+    self.map.removeLayer(self.staticLayer);
+    self.map.addLayer(self.dinamycLayer);
+    done && done();
+  });
+
+}
+
+Map.prototype.play = function() {
+  this.dinamycLayer.play();
+}
+
+Map.prototype.stop = function() {
+}
+
+Map.prototype._queryForDay = function(d) {
+  return "SELECT cartodb_id, customer_country, amount, (select the_geom_webmercator FROM comercios_08_mwc as c WHERE t.business_id =c.id ) as the_geom_webmercator FROM tx_output_08_mwc as t WHERE date_part('day',t.tx_date_proc) =" + this.options.dates[d];
+}
+
+Map.prototype.changeDate = function(day){
+  this.staticLayer.setQuery(this._queryForDay(day));
+}
+
+var mapL,mapR;
+var showing_menu = false;
+var dynamic = true;
+
+
 
 $('.menuBar a.swtichButton').bind('click', function(){toggleMenu()});
 $('#buttonContainer ul li a').bind('click', toggleMaps);
 $('#daySelector').change(changeDate)
 
-cartodb.createVis('map1', staticMapsURLs.staticDefault, {
-      sql: "SELECT cartodb_id, customer_country, amount, (select the_geom_webmercator FROM comercios_08_mwc as c WHERE t.business_id =c.id ) as the_geom_webmercator FROM tx_output_08_mwc as t WHERE date_part('day',t.tx_date_proc) =" + dates['SUN'][0],
-      cartodb_logo: false
-}).done(function(vis, layers) {
-  layerL = layers[1];
-  mapL = vis.getNativeMap();
-  mapL.on('moveend', function(e){changeMapState(mapL,mapR)});
-  return;
+
+mapL = new Map({
+  el: 'map1',
+  day: 'SUN',
+  dates: {
+    SUN: '19',
+    MON: '20',
+    TUE: '21',
+    WED: '22',
+    THU: '23',
+    FRI: '24',
+    SAT: '25'
+  }
 });
 
-cartodb.createVis('map2', staticMapsURLs.staticDefault, {
-      sql: "SELECT cartodb_id, customer_country, amount, (select the_geom_webmercator FROM comercios_08_mwc as c WHERE t.business_id =c.id ) as the_geom_webmercator FROM tx_output_08_mwc as t WHERE date_part('day',t.tx_date_proc) =" + dates['SUN'][1],
-      cartodb_logo: false,
-      zoomControl: false
-}).done(function(vis, layers) {
-  layerR = layers[1];
-  mapR = vis.getNativeMap();
-  mapR.on('moveend', function(e){changeMapState(mapR,mapL)});
-  return;
+mapR = new Map({
+  el: 'map2',
+  day: 'SUN',
+  dates: {
+    SUN: '26',
+    MON: '27',
+    TUE: '28',
+    WED: '29',
+    THU: '01',
+    FRI: '02',
+    SAT: '03'
+  }
 });
+
+
+function AnimationController(maps) {
+  this.maps = maps;
+  this.render = this.render.bind(this);
+}
+
+AnimationController.prototype.play = function() {
+  this.previous_time = new Date().getTime();
+  requestAnimationFrame(this.render);
+}
+
+AnimationController.prototype.render = function() {
+  var now = new Date().getTime();
+  var delta =  0.001*(now - this.previous_time);
+  this.previous_time = now;
+  this.maps.forEach(function(m) {
+    m.dinamycLayer._render(delta);
+  });
+  requestAnimationFrame(this.render);
+  this.update_ui();
+}
+
+AnimationController.prototype.update_ui= function() {
+  var d = this.maps[0].dinamycLayer.getTime();
+  $('#day').html(d.getDay());
+  $('#hour').html(d.getHours() +":" + d.getMinutes());
+}
+
+var animation;
+mapL.init(function() {
+  mapR.init(function() {
+    // link map movement
+    mapL.map.on('moveend', function(e) {
+        changeMapState(mapL.map, mapR.map)
+    });
+    mapR.map.on('moveend', function(e) {
+        changeMapState(mapR.map, mapL.map)
+    });
+
+    animation = new AnimationController([mapL, mapR]);
+    animation.play();
+  })
+  
+});
+
 
 //Applies the same view from src to tgt map
 function changeMapState(src,tgt){
@@ -83,8 +189,7 @@ function toggleMaps(e){
 //Change the date shown in the static maps
 function changeDate(e){
   var _v = e.target.value;
-  var q = "SELECT cartodb_id, customer_country, amount, (select the_geom_webmercator FROM comercios_08_mwc as c WHERE t.business_id =c.id ) as the_geom_webmercator FROM tx_output_08_mwc as t WHERE date_part('day',t.tx_date_proc) =" + dates[_v][0];
-  layerL.setQuery(q);
-  q = "SELECT cartodb_id, customer_country, amount, (select the_geom_webmercator FROM comercios_08_mwc as c WHERE t.business_id =c.id ) as the_geom_webmercator FROM tx_output_08_mwc as t WHERE date_part('day',t.tx_date_proc) =" + dates[_v][1];
-  layerR.setQuery(q);
+  mapL.changeDate(_v);
+  mapR.changeDate(_v);
 }
+
