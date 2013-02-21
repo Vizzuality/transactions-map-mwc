@@ -134,7 +134,7 @@ L.TimeLayer = L.CanvasLayer.extend({
         var base_idx = i * this.MAX_UNITS;
         //def[row.sd[0]] = row.se[0];
         for (var j = 0; j < row.dates.length; ++j) {
-            values[base_idx + row.dates[j]] = Math.min(Math.sqrt(row.vals[j])/2, 30);
+            values[base_idx + row.dates[j]] = Math.min(Math.sqrt(row.vals[j])*window.BALL_SIZE_GAIN, 30);
             /*if (row.vals[j] > this.MAX_VALUE) {
                 this.MAX_VALUE = row.vals[j];
                 this.MAX_VALUE_LOG = Math.log(this.MAX_VALUE);
@@ -241,7 +241,7 @@ Entities.prototype.pre_cache_sprites = function(x, y) {
     var ctx = canvas.getContext('2d');
     ctx.width = canvas.width = pixel_size * 2;
     ctx.height = canvas.height = pixel_size * 2;
-    ctx.fillStyle = 'rgba(0, 255,255, 0.2)';
+    ctx.fillStyle = window.BALLS_COLOR ;//'rgba(0, 255,255, 0.12)';
     ctx.beginPath();
     ctx.arc(pixel_size, pixel_size, pixel_size, 0, Math.PI*2, true, true);
     ctx.closePath();
@@ -282,7 +282,7 @@ Entities.prototype.update = function(dt) {
     for(var i = len - 1; i >= 0; --i) {
         //var c = (this.life[i] -= this.life[i]*0.15);
         var diff = this.life[i] - this.current_life[i];
-        this.current_life[i] += diff*dt*2;
+        this.current_life[i] += diff*dt*window.BALL_ANIMATION_SPEED;
         if(diff <= 0.05) {
           _remove[removed++] = i;
         }

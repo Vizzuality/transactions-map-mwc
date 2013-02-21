@@ -1,4 +1,8 @@
 
+BALLS_COLOR = 'rgba(0, 255,255, 0.12)';
+BALL_SIZE_GAIN = 1; // ball size is greater when this value is increased
+BALL_ANIMATION_SPEED = 2.5; // no more than 5
+
 var MENU_TOGGLE_SIZE = 210;
 var staticMapsURLs = {
   staticDefault: 'http://saleiva2.cartodb.com/api/v1/viz/186/viz.json'
