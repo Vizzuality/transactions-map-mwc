@@ -37,7 +37,7 @@ L.TimeLayer = L.CanvasLayer.extend({
     }, this);
     this._render = this._render.bind(this);
     this.MAX_UNITS = this.options.steps + 2;
-    this.entities = new Entities(5000);
+    this.entities = new Entities(7000);
     this.time = 0;
     this.queue = [];
     this.realTime = 0.0;
@@ -97,10 +97,11 @@ L.TimeLayer = L.CanvasLayer.extend({
     "    FROM " +
     "        hgrid, {0} i ".format(self.options.table) +
     "    WHERE " +
-    "        ST_Intersects(i.the_geom_webmercator, hgrid.cell) " +
-    "        AND date_part('epoch',i.{0}) > {1} ".format(self.options.column, self.options.start_date) + 
+    "        date_part('epoch',i.{0}) > {1} ".format(self.options.column, self.options.start_date) + 
+    "        AND date_part('epoch',i.{0}) < {1} ".format(self.options.column, self.options.end_date) + 
+    "        AND ST_Intersects(i.the_geom_webmercator, hgrid.cell) " +
     "    GROUP BY " +
-    "        hgrid.cell, floor((date_part('epoch',{0})- {1})/{2})".format(self.options.column, self.options.start_date, self.options.step) +
+    "        hgrid.cell, floor((date_part('epoch',{0}) - {1})/{2})".format(self.options.column, self.options.start_date, self.options.step) +
     " ) f GROUP BY x, y";
     self.sql(sql, function (data) {
       var time_data = self.pre_cache_months(data.rows, coord, zoom);
@@ -117,7 +118,6 @@ L.TimeLayer = L.CanvasLayer.extend({
     if (typeof(ArrayBuffer) !== undefined) {
         xcoords = new Float32Array(rows.length);
         ycoords = new Float32Array(rows.length);
-        console.log(rows.length);
         values = new Uint8Array(rows.length * this.MAX_UNITS);// 256 months
     } else {
       alert("you browser does not support Typed Arrays");
@@ -125,8 +125,6 @@ L.TimeLayer = L.CanvasLayer.extend({
     }
     // base tile x, y
     var total_pixels = 256 << zoom;
-
-    this._ctx.fillStyle = '#F00';
 
     for (var i in rows) {
         row = rows[i];
@@ -136,7 +134,7 @@ L.TimeLayer = L.CanvasLayer.extend({
         var base_idx = i * this.MAX_UNITS;
         //def[row.sd[0]] = row.se[0];
         for (var j = 0; j < row.dates.length; ++j) {
-            values[base_idx + row.dates[j]] = Math.min(Math.log(row.vals[j]), 30);
+            values[base_idx + row.dates[j]] = Math.min(Math.sqrt(row.vals[j])/2, 30);
             /*if (row.vals[j] > this.MAX_VALUE) {
                 this.MAX_VALUE = row.vals[j];
                 this.MAX_VALUE_LOG = Math.log(this.MAX_VALUE);
@@ -189,6 +187,7 @@ L.TimeLayer = L.CanvasLayer.extend({
     var origin = this._map._getNewTopLeftPoint(this._map.getCenter(), this._map.getZoom());
     this._ctx.translate(-origin.x, -origin.y);
     this._ctx.fillStyle = 'rgba(0, 255,255, 0.01)';
+    this._ctx.globalCompositeOperation = 'lighter';
 
     this.entities.update(delta);
     this.entities.render(this._ctx);
@@ -204,7 +203,7 @@ L.TimeLayer = L.CanvasLayer.extend({
     }
 
     if(this.queue.length) {
-      var emit = Math.min(200, this.queue.length);
+      var emit = Math.min(10, this.queue.length);
       //emit = 1;
       while(emit--) {
         var p = this.queue.pop();
@@ -242,7 +241,7 @@ Entities.prototype.pre_cache_sprites = function(x, y) {
     var ctx = canvas.getContext('2d');
     ctx.width = canvas.width = pixel_size * 2;
     ctx.height = canvas.height = pixel_size * 2;
-    ctx.fillStyle = 'rgba(0, 255,255, 0.1)';
+    ctx.fillStyle = 'rgba(0, 255,255, 0.2)';
     ctx.beginPath();
     ctx.arc(pixel_size, pixel_size, pixel_size, 0, Math.PI*2, true, true);
     ctx.closePath();
@@ -284,7 +283,7 @@ Entities.prototype.update = function(dt) {
         //var c = (this.life[i] -= this.life[i]*0.15);
         var diff = this.life[i] - this.current_life[i];
         this.current_life[i] += diff*dt*2;
-        if(diff <= 0.2) {
+        if(diff <= 0.05) {
           _remove[removed++] = i;
         }
     }

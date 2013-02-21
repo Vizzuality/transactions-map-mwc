@@ -33,7 +33,8 @@ Map.prototype.init = function(done) {
     fitbounds : 1,
     clock : true,
     countby:'sum(i.amount)',
-    start_date: (new Date(2012, 1, parseInt(this.options.dates[this.options.day], 10)).getTime()/1000)>>0
+    start_date: (this.options.start.getTime()/1000)>>0,
+    end_date: (this.options.end.getTime()/1000)>>0
   }
 
   cartodb.createVis(this.options.el, staticMapsURLs.staticDefault, {
@@ -88,7 +89,9 @@ mapL = new Map({
     THU: '23',
     FRI: '24',
     SAT: '25'
-  }
+  },
+  start: new Date(2012, 1, 19),
+  end: new Date(2012, 1, 25)
 });
 
 mapR = new Map({
@@ -102,7 +105,9 @@ mapR = new Map({
     THU: '01',
     FRI: '02',
     SAT: '03'
-  }
+  },
+  start: new Date(2012, 1, 26),
+  end: new Date(2012, 2, 3)
 });
 
 
@@ -121,7 +126,7 @@ AnimationController.prototype.render = function() {
   var delta =  0.001*(now - this.previous_time);
   this.previous_time = now;
   this.maps.forEach(function(m) {
-    m.dinamycLayer._render(delta);
+    m.dinamycLayer._render(Math.min(0.2, delta));
   });
   requestAnimationFrame(this.render);
   this.update_ui();

@@ -60,7 +60,6 @@ L.Mixin.TileLoader = {
   },
 
   _removeTile: function (key) {
-      console.log("tileRemoved", key);
       this.fire('tileRemoved', this._tiles[key]);
       delete this._tiles[key];
   },
@@ -70,7 +69,6 @@ L.Mixin.TileLoader = {
   },
 
   _tileLoaded: function(tilePoint, tileData) {
-    console.log("tileLoaded", tilePoint);
     this._tiles[tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom] = tileData;
   },
 
