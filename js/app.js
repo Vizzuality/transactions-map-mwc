@@ -147,7 +147,6 @@ mapL.init(function() {
     animation = new AnimationController([mapL, mapR]);
     animation.play();
   })
-  
 });
 
 
