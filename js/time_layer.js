@@ -89,11 +89,11 @@ L.TimeLayer = L.CanvasLayer.extend({
     "    ) as cell " +
     " ) " +
     " SELECT  " +
-    "    x, y, array_agg(c) vals, array_agg(d) dates " +
+    "    x, y, array_agg(c) vals, array_agg(f) vals_non_es ,array_agg(d) dates " +
     " FROM ( " +
     "    SELECT " +
     "      round(CAST (st_xmax(hgrid.cell) AS numeric),4) x, round(CAST (st_ymax(hgrid.cell) AS numeric),4) y, " +
-    "      {0} c, floor((date_part('epoch',{1})- {2})/{3}) d ".format(self.options.countby, self.options.column, self.options.start_date, self.options.step) +
+    "      {0} c, sum(i.amount_world) f, floor((date_part('epoch',{1})- {2})/{3}) d ".format(self.options.countby, self.options.column, self.options.start_date, self.options.step) +
     "    FROM " +
     "        hgrid, {0} i ".format(self.options.table) +
     "    WHERE " +
@@ -119,6 +119,7 @@ L.TimeLayer = L.CanvasLayer.extend({
         xcoords = new Float32Array(rows.length);
         ycoords = new Float32Array(rows.length);
         values = new Uint8Array(rows.length * this.MAX_UNITS);// 256 months
+        values_non_es = new Uint8Array(rows.length * this.MAX_UNITS);// 256 months
     } else {
       alert("you browser does not support Typed Arrays");
       return;
@@ -135,6 +136,7 @@ L.TimeLayer = L.CanvasLayer.extend({
         //def[row.sd[0]] = row.se[0];
         for (var j = 0; j < row.dates.length; ++j) {
             values[base_idx + row.dates[j]] = Math.min(Math.sqrt(row.vals[j])*window.BALL_SIZE_GAIN, 30);
+            values_non_es[base_idx + row.dates[j]] = Math.min(Math.sqrt(row.vals_non_es[j])*window.BALL_SIZE_GAIN, 30);
             /*if (row.vals[j] > this.MAX_VALUE) {
                 this.MAX_VALUE = row.vals[j];
                 this.MAX_VALUE_LOG = Math.log(this.MAX_VALUE);
@@ -158,6 +160,7 @@ L.TimeLayer = L.CanvasLayer.extend({
         xcoords: xcoords,
         ycoords: ycoords,
         values: values,
+        values_non_es: values_non_es,
         size: 1 << (this.resolution * 2)
     };
   },
@@ -176,8 +179,11 @@ L.TimeLayer = L.CanvasLayer.extend({
       for(var i = 0; i < tile.length; ++i) {
         var cell = tile.values[this.MAX_UNITS * i + this.time];
         if (cell) {
-          //this._ctx.fillRect(xcoords[i],  ycoords[i], 10, 10);
-          this.queue.push([xcoords[i],  ycoords[i], cell]);
+          this.queue.push([xcoords[i],  ycoords[i], cell, 0]);
+        }
+        var cell = tile.values_non_es[this.MAX_UNITS * i + this.time];
+        if (cell) {
+          this.queue.push([xcoords[i],  ycoords[i], cell, 1]);
         }
       }
   },
@@ -207,7 +213,7 @@ L.TimeLayer = L.CanvasLayer.extend({
       //emit = 1;
       while(emit--) {
         var p = this.queue.pop();
-        this.entities.add(p[0], p[1], p[2]);
+        this.entities.add(p[0], p[1], p[2], p[3]);
       }
     }
 
@@ -228,12 +234,15 @@ var Entities = function(size, remove_callback) {
     this.life = new Float32Array(size);
     this.current_life = new Float32Array(size);
     this.remove = new Int32Array(size);
+    this.type = new Int8Array(size);
     this.last = 0;
     this.size = size;
-    this.sprites = this.pre_cache_sprites();
+    this.sprites = []
+    this.sprites.push(this.pre_cache_sprites(window.BALLS_COLOR_ES));
+    this.sprites.push(this.pre_cache_sprites(window.BALLS_COLOR_NO_ES));
 }
 
-Entities.prototype.pre_cache_sprites = function(x, y) {
+Entities.prototype.pre_cache_sprites = function(color) {
   var sprites = []
   for(var i = 0; i < 30; ++i) {
     var pixel_size = i*2 + 2;
@@ -241,7 +250,7 @@ Entities.prototype.pre_cache_sprites = function(x, y) {
     var ctx = canvas.getContext('2d');
     ctx.width = canvas.width = pixel_size * 2;
     ctx.height = canvas.height = pixel_size * 2;
-    ctx.fillStyle = window.BALLS_COLOR ;//'rgba(0, 255,255, 0.12)';
+    ctx.fillStyle = color;//'rgba(0, 255,255, 0.12)';
     ctx.beginPath();
     ctx.arc(pixel_size, pixel_size, pixel_size, 0, Math.PI*2, true, true);
     ctx.closePath();
@@ -251,12 +260,13 @@ Entities.prototype.pre_cache_sprites = function(x, y) {
   return sprites;
 }
 
-Entities.prototype.add = function(x, y, life) {
+Entities.prototype.add = function(x, y, life, type) {
   if(this.last < this.size) {
     this.x[this.last] = x;
     this.y[this.last] = y;
     this.life[this.last] = Math.min(life, 29);
     this.current_life[this.last] = 0;
+    this.type[this.last] = type;
     this.last++;
   }
 }
@@ -266,11 +276,12 @@ Entities.prototype.dead = function(i) {
 }
 
 Entities.prototype.render= function(ctx) {
-  var s;
+  var s, t;
   for(var i = 0; i < this.last ; ++i) {
     s = (this.current_life[i])>>0;
+    t = this.type[i];
     //ctx.arc(this.x[i], this.y[i] ,3*this.life[i], 0, 2*Math.PI, true, true);
-    ctx.drawImage(this.sprites[s], (this.x[i] - s*2)>>0, (this.y[i] - s*2)>>0);
+    ctx.drawImage(this.sprites[t][s], (this.x[i] - s*2)>>0, (this.y[i] - s*2)>>0);
   }
 }
 
@@ -296,6 +307,7 @@ Entities.prototype.update = function(dt) {
       this.y[r] = this.y[last];
       this.life[r] = this.life[last];
       this.current_life[r] = this.current_life[last]
+      this.type[r] = this.type[last];
 
       this.last--;
     }

@@ -1,6 +1,7 @@
 
-BALLS_COLOR = 'rgba(0, 255,255, 0.12)';
-BALL_SIZE_GAIN = 1; // ball size is greater when this value is increased
+BALLS_COLOR_ES = 'rgba(0, 255,255, 0.12)';
+BALLS_COLOR_NO_ES = 'rgba(255, 0 ,255, 0.12)';
+BALL_SIZE_GAIN = 0.4; // ball size is greater when this value is increased
 BALL_ANIMATION_SPEED = 2.5; // no more than 5
 
 var MENU_TOGGLE_SIZE = 210;
@@ -24,7 +25,7 @@ Map.prototype.init = function(done) {
 
   var options = {
     user : "saleiva2",
-    table : "mwc_torque",
+    table : "torque_mwc_2",
     column : "date",
     blendmode : 'source-over',
     trails : false,
@@ -36,7 +37,7 @@ Map.prototype.init = function(done) {
     fps : 30,
     fitbounds : 1,
     clock : true,
-    countby:'sum(i.amount)',
+    countby:'sum(i.amount_es)',
     start_date: (this.options.start.getTime()/1000)>>0,
     end_date: (this.options.end.getTime()/1000)>>0
   }
