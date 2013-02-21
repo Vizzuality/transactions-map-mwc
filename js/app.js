@@ -1,9 +1,10 @@
 
 BALLS_COLOR_ES = 'rgba(0, 255,255, 0.06)';
 BALLS_COLOR_NO_ES = 'rgba(255, 0 ,255, 0.06)';
-BALL_SIZE_GAIN = 0.5; // ball size is greater when this value is increased
+BALL_SIZE_GAIN = 0.92; // ball size is greater when this value is increased
 BALL_ANIMATION_SPEED = 2; // no more than 5
 
+var daysAbv = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 var MENU_TOGGLE_SIZE = 210;
 var staticMapsURLs = {
   staticDefault: 'http://saleiva2.cartodb.com/api/v1/viz/186/viz.json'
@@ -140,8 +141,13 @@ AnimationController.prototype.render = function() {
 
 AnimationController.prototype.update_ui= function() {
   var d = this.maps[0].dinamycLayer.getTime();
-  $('#day').html(d.getDay());
-  $('#hour').html(d.getHours() +":" + d.getMinutes());
+  $('#day').html(daysAbv[d.getDay()]);
+  $('#hour').html(d.getHours().pad(2) +":" +d.getMinutes().pad(2)+'h');
+}
+
+//Returns a number with leading 0's. This is cool for dates.
+Number.prototype.pad = function (len) {
+  return (new Array(len+1).join("0") + this).slice(-len);
 }
 
 var animation;
