@@ -176,6 +176,7 @@ function toggleMaps(e){
   var $a = $(e.target).closest('a')
   dynamic = !dynamic;
   if($a.hasClass('selected')){
+    toggleMenu();
     return;
   }
   $('#buttonContainer ul li a').removeClass('selected');
