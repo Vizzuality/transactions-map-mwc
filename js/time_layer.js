@@ -203,7 +203,7 @@ L.TimeLayer = L.CanvasLayer.extend({
     }
 
     if(this.queue.length) {
-      var emit = Math.min(10, this.queue.length);
+      var emit = Math.min(100, this.queue.length);
       //emit = 1;
       while(emit--) {
         var p = this.queue.pop();
