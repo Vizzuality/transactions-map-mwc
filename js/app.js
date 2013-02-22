@@ -51,9 +51,9 @@ Map.prototype.init = function(done) {
     self.zoom = vis.getOverlay('zoom');
     self.staticLayer = layers[1];
     self.dinamycLayer = new L.TimeLayer(options);
-
     self.map.removeLayer(self.staticLayer);
     self.map.addLayer(self.dinamycLayer);
+    $('.leaflet-control-attribution').fadeOut();
     done && done();
   });
 
