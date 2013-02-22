@@ -84,6 +84,7 @@ $('.menuBar a.swtichButton').bind('click', function(){toggleMenu()});
 $('#buttonContainer ul li a').bind('click', toggleMaps);
 $('#daySelector').change(changeDate)
 
+var chartL, chartR;
 
 mapL = new Map({
   el: 'map1',
@@ -100,32 +101,6 @@ mapL = new Map({
   start: new Date(2012, 1, 19),
   end: new Date(2012, 1, 25)
 });
-
-chart_data({
-  weeks: [
-    [new Date(2012, 1, 19), new Date(2012, 1, 25)],
-    [new Date(2012, 1, 26), new Date(2012, 2, 3)]
-  ],
-  table: 'torque_mwc_2',
-  column: 'date'
-}, function(data) {
-
-  chart = new Chart({
-    el: '#chart1',
-    start_date: new Date(2012, 1, 19).getTime()/1000,
-    foreground: data[0],
-    background: data[1],
-
-  });
-
-  chart = new Chart({
-    el: '#chart2',
-    start_date: new Date(2012, 1, 19).getTime()/1000,
-    foreground: data[1],
-    background: data[0],
-  });
-
-})
 
 mapR = new Map({
   el: 'map2',
@@ -144,15 +119,23 @@ mapR = new Map({
 });
 
 
-function AnimationController(maps) {
+function AnimationController(maps, charts) {
   this.maps = maps;
+  this.charts = charts;
   this.render = this.render.bind(this);
+  this.playing = false;
 }
 
 AnimationController.prototype.play = function() {
   this.previous_time = new Date().getTime();
+  this.playing = true;
   requestAnimationFrame(this.render);
 }
+
+AnimationController.prototype.stop = function() {
+  this.playing = false;
+}
+
 
 AnimationController.prototype.render = function() {
   var now = new Date().getTime();
@@ -161,15 +144,19 @@ AnimationController.prototype.render = function() {
   this.maps.forEach(function(m) {
     m.dinamycLayer._render(Math.min(0.2, delta));
   });
-  requestAnimationFrame(this.render);
+  if(this.playing) requestAnimationFrame(this.render);
   this.update_ui();
 }
 
 AnimationController.prototype.update_ui= function() {
   var d = this.maps[0].dinamycLayer.getTime();
+  var d1 = this.maps[1].dinamycLayer.getTime();
   $('#day').html(daysAbv[d.getDay()]);
   $('#hour').html(d.getHours().pad(2) +":" +d.getMinutes().pad(2)+'h');
+  this.charts[0].set_time(d);
+  this.charts[1].set_time(d1);
 }
+
 
 //Returns a number with leading 0's. This is cool for dates.
 Number.prototype.pad = function (len) {
@@ -187,8 +174,35 @@ mapL.init(function() {
         changeMapState(mapR.map, mapL.map)
     });
     mapR.zoom.clean();
-    animation = new AnimationController([mapL, mapR]);
-    animation.play();
+    chart_data({
+      weeks: [
+        [new Date(2012, 1, 19), new Date(2012, 1, 25)],
+        [new Date(2012, 1, 26), new Date(2012, 2, 3)]
+      ],
+      table: 'torque_mwc_2',
+      column: 'date'
+    }, function(data) {
+
+      chartL = new Chart({
+        el: '#chart1',
+        start_date: new Date(2012, 1, 19).getTime()/1000,
+        foreground: data[0],
+        background: data[1],
+
+      });
+
+      chartR = new Chart({
+        el: '#chart2',
+        start_date: new Date(2012, 1, 19).getTime()/1000,
+        foreground: data[1],
+        background: data[0],
+      });
+
+      animation = new AnimationController([mapL, mapR], [chartL, chartR]);
+      animation.play();
+
+    })
+
   })
 });
 
@@ -242,14 +256,62 @@ function Chart(options) {
     .x(function(d) { return new Date(1000*(options.start_date + d.date*15*60)); })
     .y(function(d) { return [+d.sum_es, d.sum_w]; });
 
+  this.chart = chart;
+
   
   d3.select(options.el)
     .datum(options.background) 
-    .call(chart)
+    .call(chart.only_stroke(true).stroke_opacity(0.4))
 
   d3.select(options.el)
     .datum(options.foreground) 
-    .call(chart)
+    .call(chart.only_stroke(false).stroke_opacity(1))
+
+  
+  var canvas = d3.select(options.el).append('canvas');
+  canvas.attr("width", chart.width())
+        .attr("height", chart.height());
+
+  var timeMap = {};
+  for(var i = 0; i < options.foreground.length; ++i) {
+    var d = options.foreground[i];
+    timeMap[d.date] = [d.sum_es, d.sum_w];
+  }
+  this.timeMap = timeMap;
+
+  this.animCanvas = canvas[0][0];
+
+}
+
+Chart.prototype.set_time = function(d) {
+
+  var chart = this.chart;
+  var c = this.animCanvas;
+  c.width = c.width;
+
+  var t = ((d.getTime()/1000) - this.options.start_date)/(15*60);
+  var y = this.timeMap[t]
+  if(y) {
+    t = chart.xScale()(d);
+    var y0 = chart.yScale()(y[0]);
+    var y1 = chart.yScale()(y[1]);
+    var ctx = c.getContext('2d');
+
+    var size = 4;
+    var s2 = size;
+    ctx.fillStyle = 'rgba(49, 191, 255, 1)';
+    ctx.beginPath();
+    ctx.arc(t, y0, size, 0, Math.PI*2, true, true);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = 'rgba(255, 0, 255, 1)';
+    ctx.beginPath();
+    ctx.arc(t, y1, size, 0, Math.PI*2, true, true);
+    ctx.closePath();
+    ctx.fill();
+
+  }
 
 }
 

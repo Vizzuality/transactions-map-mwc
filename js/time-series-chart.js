@@ -7,7 +7,9 @@ function timeSeriesChart() {
       xScale = d3.time.scale(),
       yScale = d3.scale.linear(),
       area = d3.svg.area().x(X).y1(Y),
-      line = d3.svg.line().x(X).y(Y);
+      line = d3.svg.line().x(X).y(Y),
+      only_stroke = false,
+      stroke_opacity = 1;
 
   function chart(selection) {
     selection.each(function(data) {
@@ -45,50 +47,22 @@ function timeSeriesChart() {
         }
         ctx.lineTo(xScale(p[0]), height);
         ctx.stroke();
-        ctx.fill();
+        if(!only_stroke) {
+          ctx.fill();
+        }
       }
 
       canvas.forEach(function(c, v) {
         var p;
         var ctx = c[0].getContext('2d');
         ctx.fillStyle = 'rgba(49, 191, 255, 0.25)';
-        ctx.strokeStyle = 'rgba(49, 191, 255, 1)';
+        ctx.strokeStyle = 'rgba(49, 191, 255, ' + stroke_opacity + ')';
         renderGraph(ctx, 0)
         ctx.fillStyle = 'rgba(255, 0, 255, 0.25)';
-        ctx.strokeStyle = 'rgba(255, 0, 255, 1)';
+        ctx.strokeStyle = 'rgba(255, 0, 255, ' + stroke_opacity + ')';
         renderGraph(ctx, 1)
       });
 
-/*
-      gEnter.append("path").attr("class", "area");
-      gEnter.append("path").attr("class", "line");
-      gEnter.append("g").attr("class", "x axis");
-
-*/
-
-      
-      /*
-      // Update the outer dimensions.
-
-      // Update the inner dimensions.
-      var g = svg.select("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-      // Update the area path.
-      g.select(".area")
-          .attr("d", area.y0(yScale.range()[0]));
-
-      // Update the line path.
-      g.select(".line")
-          .attr("d", line);
-
-      // Update the x-axis.
-      // */
-      /*
-      g.select(".x.axis")
-          .attr("transform", "translate(0," + yScale.range()[0] + ")")
-          .call(xAxis);
-      */
     });
   }
 
@@ -114,6 +88,15 @@ function timeSeriesChart() {
     return chart;
   };
 
+  chart.stroke_opacity = function(_) {
+    stroke_opacity = _;
+    return this;
+  }
+  chart.only_stroke = function(_) {
+    only_stroke = _;
+    return this;
+  }
+
   chart.height = function(_) {
     if (!arguments.length) return height;
     height = _;
@@ -131,6 +114,9 @@ function timeSeriesChart() {
     yValue = _;
     return chart;
   };
+
+  chart.xScale = function() { return xScale; }
+  chart.yScale = function() { return yScale; }
 
   return chart;
 }
