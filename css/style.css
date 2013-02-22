@@ -50,17 +50,20 @@ body{font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; margin: 
   position: absolute;
 }
 
-.chart .line {
-  fill: none;
-  stroke: #FF00FF;
-  stroke-width: 1.5px;
+.chart .char_info {
+  position:absolute;
 }
-.chart .area{
-  fill: rgba(255, 0, 255, 0.25);
-  stroke: none;
+.chart .char_info.to_right {
+  right: 0;
 }
+
 .chart canvas {
   position: absolute;
-  top: 0;
+  top: 20px;
   left: 0;
+}
+
+#chart1 {
+  position: absolute;
+  left: 100px;
 }

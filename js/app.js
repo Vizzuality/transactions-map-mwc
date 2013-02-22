@@ -155,6 +155,18 @@ AnimationController.prototype.update_ui= function() {
   $('#hour').html(d.getHours().pad(2) +":" +d.getMinutes().pad(2)+'h');
   this.charts[0].set_time(d);
   this.charts[1].set_time(d1);
+
+  var qty = this.charts[0].qty_for_time(d);
+  if(qty) {
+    $('#prev_spain').html(qty[0]);
+    $('#prev_world').html(qty[1]);
+  }
+
+  qty = this.charts[1].qty_for_time(d1);
+  if(qty) {
+    $('#mwc_spain').html(qty[0]);
+    $('#mwc_world').html(qty[1]);
+  }
 }
 
 
@@ -215,7 +227,7 @@ function chart_data(options, callback) {
   this.options.column = options.column || 'date';
   this.options.step = options.steo || 15*60;
 
-  var sql = "select floor((date_part('epoch',{0}) - {1})/{2}) as date, sum(amount_es) as sum_es,sum(amount_world) as sum_w ".format(self.options.column, self.options.start_date, self.options.step)  + 
+  var sql = "select floor((date_part('epoch',{0}) - {1})/{2}) as date, sum(amount_es) as sum_es, sum(amount_world) as sum_w ".format(self.options.column, self.options.start_date, self.options.step)  + 
             "    FROM {0} i ".format(self.options.table) + 
             "    WHERE " +
             "        date_part('epoch',i.{0}) > {1} ".format(self.options.column, self.options.start_date) + 
@@ -259,13 +271,14 @@ function Chart(options) {
   this.chart = chart;
 
   
+  var width = $(options.el).parent().width() - 100;
   d3.select(options.el)
     .datum(options.background) 
-    .call(chart.only_stroke(true).stroke_opacity(0.4))
+    .call(chart.only_stroke(true).stroke_opacity(0.4).width(width))
 
   d3.select(options.el)
     .datum(options.foreground) 
-    .call(chart.only_stroke(false).stroke_opacity(1))
+    .call(chart.only_stroke(false).stroke_opacity(1).width(width))
 
   
   var canvas = d3.select(options.el).append('canvas');
@@ -281,6 +294,11 @@ function Chart(options) {
 
   this.animCanvas = canvas[0][0];
 
+}
+
+Chart.prototype.qty_for_time = function(d) {
+  var t = ((d.getTime()/1000) - this.options.start_date)/(15*60);
+  return this.timeMap[t]
 }
 
 Chart.prototype.set_time = function(d) {
