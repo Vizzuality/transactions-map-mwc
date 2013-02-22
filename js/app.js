@@ -156,18 +156,6 @@ AnimationController.prototype.update_ui= function() {
   increaseNumber($('#hour .minutes'),d.getMinutes(),3,58);
   this.charts[0].set_time(d);
   this.charts[1].set_time(d1);
-
-  var qty = this.charts[0].qty_for_time(d);
-  if(qty) {
-    $('#prev_spain').html(qty[0]);
-    $('#prev_world').html(qty[1]);
-  }
-
-  qty = this.charts[1].qty_for_time(d1);
-  if(qty) {
-    $('#mwc_spain').html(qty[0]);
-    $('#mwc_world').html(qty[1]);
-  }
 }
 
 
