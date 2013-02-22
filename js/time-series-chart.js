@@ -42,12 +42,16 @@ function timeSeriesChart() {
         ctx.beginPath();
         ctx.moveTo(0, height)
         for(var i = 0; i < data.length; ++i) {
-          p = data[i]
-          ctx.lineTo(xScale(p[0]), yScale(p[1][v]));
+          p = data[i];
+          if(v==1){
+            ctx.lineTo(xScale(p[0]), yScale(p[1][v]+p[1][0]));
+          }else{
+            ctx.lineTo(xScale(p[0]), yScale(p[1][v]));
+          }
         }
         ctx.lineTo(xScale(p[0]), height);
         ctx.stroke();
-        if(!only_stroke) {
+        if(!only_stroke){
           ctx.fill();
         }
       }
@@ -55,12 +59,12 @@ function timeSeriesChart() {
       canvas.forEach(function(c, v) {
         var p;
         var ctx = c[0].getContext('2d');
-        ctx.fillStyle = 'rgba(49, 191, 255, 0.25)';
-        ctx.strokeStyle = 'rgba(49, 191, 255, ' + stroke_opacity + ')';
-        renderGraph(ctx, 0)
-        ctx.fillStyle = 'rgba(255, 0, 255, 0.25)';
+        ctx.fillStyle = 'rgba(242, 200, 242, 1)';
         ctx.strokeStyle = 'rgba(255, 0, 255, ' + stroke_opacity + ')';
         renderGraph(ctx, 1)
+        ctx.fillStyle = 'rgba(202, 240, 252, 1)';
+        ctx.strokeStyle = 'rgba(49, 191, 255, ' + stroke_opacity + ')';
+        renderGraph(ctx, 0)
       });
 
     });
@@ -71,7 +75,7 @@ function timeSeriesChart() {
     return xScale(d[0]);
   }
 
-  // The x-accessor for the path generator; yScale ∘ yValue.
+  // The y-accessor for the path generator; yScale ∘ yValue.
   function Y(d) {
     return yScale(d[1]);
   }

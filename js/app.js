@@ -272,9 +272,9 @@ function Chart(options) {
 
   
   var width = $(options.el).parent().width() - 100;
-  d3.select(options.el)
-    .datum(options.background) 
-    .call(chart.only_stroke(true).stroke_opacity(0.4).width(width))
+  // d3.select(options.el)
+  //   .datum(options.background) 
+  //   .call(chart.only_stroke(true).stroke_opacity(0.4).width(width))
 
   d3.select(options.el)
     .datum(options.foreground) 
@@ -311,11 +311,21 @@ Chart.prototype.set_time = function(d) {
   var y = this.timeMap[t]
   if(y) {
     t = chart.xScale()(d);
-    var y0 = chart.yScale()(y[0]);
-    var y1 = chart.yScale()(y[1]);
     var ctx = c.getContext('2d');
 
-    var size = 4;
+    var x1 = chart.width();
+    var y0 = chart.height();
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.beginPath();
+    console.log(t);
+    ctx.rect(t,0,x1-t,y0);
+    ctx.closePath();
+    ctx.fill();
+
+    y0 = chart.yScale()(y[0]);
+    y1 = chart.yScale()(y[1]+y[0]);
+
+    var size = 3;
     var s2 = size;
     ctx.fillStyle = 'rgba(49, 191, 255, 1)';
     ctx.beginPath();
@@ -328,9 +338,7 @@ Chart.prototype.set_time = function(d) {
     ctx.arc(t, y1, size, 0, Math.PI*2, true, true);
     ctx.closePath();
     ctx.fill();
-
   }
-
 }
 
 //Applies the same view from src to tgt map
