@@ -253,7 +253,7 @@ function chart_data(options, callback) {
       var d = r.date*15*60 + si;
       return d > s && d < e;
     });
-    var max = d3.max(data, function(d) { return d3.max([d.sum_w, d.sum_es]); });
+    var max = d3.max(data, function(d) { return d3.max([d.sum_w + d.sum_es]); });
     first_week.max = max;
     second_week.max = max;
     callback([first_week, second_week]);
@@ -270,11 +270,7 @@ function Chart(options) {
 
   this.chart = chart;
 
-  
   var width = $(options.el).parent().width() - 100;
-  // d3.select(options.el)
-  //   .datum(options.background) 
-  //   .call(chart.only_stroke(true).stroke_opacity(0.4).width(width))
 
   d3.select(options.el)
     .datum(options.foreground) 
@@ -291,7 +287,6 @@ function Chart(options) {
     timeMap[d.date] = [d.sum_es, d.sum_w];
   }
   this.timeMap = timeMap;
-
   this.animCanvas = canvas[0][0];
 
 }

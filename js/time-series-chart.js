@@ -1,7 +1,7 @@
 function timeSeriesChart() {
   var margin = {top: 20, right: 20, bottom: 20, left: 20},
       width = 760,
-      height = 80,
+      height = 100,
       xValue = function(d) { return d[0]; },
       yValue = function(d) { return d[1]; },
       xScale = d3.time.scale(),
@@ -14,6 +14,7 @@ function timeSeriesChart() {
   function chart(selection) {
     selection.each(function(data) {
       var max = data.max;
+      debugger;
 
       // Convert data to standard representation greedily;
       // this is needed for nondeterministic accessors.
