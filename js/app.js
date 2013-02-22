@@ -152,9 +152,8 @@ AnimationController.prototype.update_ui= function() {
   var d = this.maps[0].dinamycLayer.getTime();
   var d1 = this.maps[1].dinamycLayer.getTime();
   $('#day').html(daysAbv[d.getDay()]);
-  increaseNumber($('#hour .hours'),d.getHours(),1,23,300);
-  increaseNumber($('#hour .minutes'),d.getMinutes(),3,58,0);
-  // $('#hour').html( +":" +.pad(2)+'h');
+  $('#hour .hours').html(d.getHours().pad(2));
+  increaseNumber($('#hour .minutes'),d.getMinutes(),3,58);
   this.charts[0].set_time(d);
   this.charts[1].set_time(d1);
 
@@ -389,15 +388,15 @@ function toggleCover(e){
   }
 }
 
-function increaseNumber(tgt,nto,i,l,d){
+function increaseNumber(tgt,nto,i,l){
   var n0 = parseInt(tgt.html());
   function increase(){
     if(n0!=nto){
       n0 = (n0>=l) ? 0 : n0+i;
-      tgt.delay(d).html(n0.pad(2))
+      tgt.html(n0.pad(2))
     }else{
       clearTimeout(clr);
     }
   }
-  var clr = setTimeout(increase, 10);
+  var clr = setTimeout(increase, 0);
 }
