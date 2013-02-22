@@ -14,7 +14,6 @@ function timeSeriesChart() {
   function chart(selection) {
     selection.each(function(data) {
       var max = data.max;
-      debugger;
 
       // Convert data to standard representation greedily;
       // this is needed for nondeterministic accessors.
