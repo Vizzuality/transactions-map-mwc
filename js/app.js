@@ -78,10 +78,10 @@ var mapL,mapR;
 var showing_menu = false;
 var dynamic = true;
 
-
-
 $('.menuBar a.swtichButton').bind('click', function(){toggleMenu()});
 $('#buttonContainer ul li a').bind('click', toggleMaps);
+$('#cover').bind('click', toggleCover);
+$('.aboutTab a').bind('click', toggleCover);
 $('#daySelector').change(changeDate)
 
 var chartL, chartR;
@@ -317,7 +317,6 @@ Chart.prototype.set_time = function(d) {
     var y0 = chart.height();
     ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
     ctx.beginPath();
-    console.log(t);
     ctx.rect(t,0,x1-t,y0);
     ctx.closePath();
     ctx.fill();
@@ -384,3 +383,10 @@ function changeDate(e){
   mapR.changeDate(_v);
 }
 
+function toggleCover(e){
+  if($('#cover').is(':visible')){
+    $('#cover').fadeOut();
+  }else{
+    $('#cover').fadeIn();
+  }
+}
