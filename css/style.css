@@ -45,3 +45,21 @@ body{font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; margin: 
 #buttonContainer ul li a.static.selected span{background:transparent url('../assets/img/icons.png') no-repeat 0 -71px;}
 #buttonContainer ul li a.time span{background:transparent url('../assets/img/icons.png') no-repeat -71px 0;}
 #buttonContainer ul li a.time.selected span{background:transparent url('../assets/img/icons.png') no-repeat -71px -71px;}
+
+.chart {
+  position: absolute;
+}
+
+.chart .line {
+  fill: none;
+  stroke: #FF00FF;
+  stroke-width: 1.5px;
+}
+.chart .area{
+  fill: rgba(255, 0, 255, 0.25);
+  stroke: none;
+}
+.chart canvas {
+  position: absolute;
+  top: 0;
+}

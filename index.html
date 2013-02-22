@@ -10,6 +10,9 @@
     <script src="js/leaflet_tileloader_mixin.js"></script>
     <script src="js/canvas_layer.js"></script>
     <script src="js/time_layer.js"></script>
+
+    <script src="js/vendor/d3.v3.min.js"></script>
+    <script src="js/time-series-chart.js"></script>
   </head>
   <body>
     
@@ -48,7 +51,14 @@
     <div class="vseparator moveUpAnimate"></div>
 
     <div id="bottomArea" class="expandAnimate">
-      <div class="chartsArea"></div>
+      <div class="chartsArea">
+        <div id="chart1" class="chart left">
+        </div>
+        <div id="chart2" class="chart right">
+        </div>
+      
+      </div>
+
       <div class="menuBar expandAnimate">
         <a href="#" class="swtichButton">MORE MAPS</a>
         <div id="buttonContainer">

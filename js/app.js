@@ -101,6 +101,32 @@ mapL = new Map({
   end: new Date(2012, 1, 25)
 });
 
+chart_data({
+  weeks: [
+    [new Date(2012, 1, 19), new Date(2012, 1, 25)],
+    [new Date(2012, 1, 26), new Date(2012, 2, 3)]
+  ],
+  table: 'torque_mwc_2',
+  column: 'date'
+}, function(data) {
+
+  chart = new Chart({
+    el: '#chart1',
+    start_date: new Date(2012, 1, 19).getTime()/1000,
+    foreground: data[0],
+    background: data[1],
+
+  });
+
+  chart = new Chart({
+    el: '#chart2',
+    start_date: new Date(2012, 1, 19).getTime()/1000,
+    foreground: data[1],
+    background: data[0],
+  });
+
+})
+
 mapR = new Map({
   el: 'map2',
   day: 'SUN',
@@ -166,6 +192,66 @@ mapL.init(function() {
   })
 });
 
+
+function chart_data(options, callback) {
+  var self = this;
+  this.options = options;
+  this.options.start_date = options.weeks[0][0].getTime()/1000
+  this.options.end_date = options.weeks[1][1].getTime()/1000
+  this.options.column = options.column || 'date';
+  this.options.step = options.steo || 15*60;
+
+  var sql = "select floor((date_part('epoch',{0}) - {1})/{2}) as date, sum(amount_es) as sum_es,sum(amount_world) as sum_w ".format(self.options.column, self.options.start_date, self.options.step)  + 
+            "    FROM {0} i ".format(self.options.table) + 
+            "    WHERE " +
+            "        date_part('epoch',i.{0}) > {1} ".format(self.options.column, self.options.start_date) + 
+            "        AND date_part('epoch',i.{0}) < {1} ".format(self.options.column, self.options.end_date) + 
+            "    GROUP BY " +
+            "        floor((date_part('epoch',{0}) - {1})/{2})".format(self.options.column, self.options.start_date, self.options.step) + 
+            "    ORDER BY " +
+            "        floor((date_part('epoch',{0}) - {1})/{2})".format(self.options.column, self.options.start_date, self.options.step) ;
+
+  d3.json("http://saleiva2.cartodb.com/api/v2/sql?q=" + encodeURIComponent(sql), function(data) {
+    data = data.rows;
+
+    var s = options.weeks[0][0].getTime()/1000
+    var e = options.weeks[0][1].getTime()/1000
+    var si = s;
+    var first_week = data.filter(function(r) {
+      var d = r.date*15*60 + si;
+      return d > s && d < e;
+    });
+    s = options.weeks[1][0].getTime()/1000
+    e = options.weeks[1][1].getTime()/1000
+    var second_week = data.filter(function(r) {
+      var d = r.date*15*60 + si;
+      return d > s && d < e;
+    });
+    var max = d3.max(data, function(d) { return d3.max([d.sum_w, d.sum_es]); });
+    first_week.max = max;
+    second_week.max = max;
+    callback([first_week, second_week]);
+  });
+}
+
+function Chart(options) {
+  self = this;
+  this.options = options;
+
+  var chart = timeSeriesChart()
+    .x(function(d) { return new Date(1000*(options.start_date + d.date*15*60)); })
+    .y(function(d) { return [+d.sum_es, d.sum_w]; });
+
+  
+  d3.select(options.el)
+    .datum(options.background) 
+    .call(chart)
+
+  d3.select(options.el)
+    .datum(options.foreground) 
+    .call(chart)
+
+}
 
 //Applies the same view from src to tgt map
 function changeMapState(src,tgt){
