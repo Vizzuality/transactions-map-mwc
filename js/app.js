@@ -7,7 +7,7 @@ BALL_ANIMATION_SPEED = 2; // no more than 5
 var daysAbv = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 var MENU_TOGGLE_SIZE = 210;
 var staticMapsURLs = {
-  staticDefault: 'http://tiles.cartocdn.com/saleiva2/api/v1/viz/186/viz.json'
+  staticDefault: 'js/viz.json'
 }
 var lastSelectedDay = 'SUN';
 
@@ -275,7 +275,7 @@ function chart_data(options, callback) {
             "    ORDER BY " +
             "        floor((date_part('epoch',{0}) - {1})/{2})".format(self.options.column, self.options.start_date, self.options.step) ;
 
-  d3.json("http://tiles.cartocdn.com/saleiva2/api/v2/sql?q=" + encodeURIComponent(sql), function(data) {
+  d3.json("http://a.netdna.cartocdn.com/saleiva2/api/v2/sql?q=" + encodeURIComponent(sql), function(data) {
     data = data.rows;
 
     var s = options.weeks[0][0].getTime()/1000
