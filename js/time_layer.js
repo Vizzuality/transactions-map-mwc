@@ -35,7 +35,16 @@ L.TimeLayer = L.CanvasLayer.extend({
     this.on('tileAdded', function(t) {
       this.get_time_data(t, t.zoom);
     }, this);
-    this._render = this._render.bind(this);
+    if(this._render.bind) {
+      this._render = this._render.bind(this);
+    } else {
+      var self = this;
+      var _old_render = this._render;
+      this._render = function() {
+        _old_render.apply(self, arguments);
+      }
+    }
+
     this.MAX_UNITS = this.options.steps + 2;
     this.entities = new Entities(7000);
     this.time = 0;
@@ -45,26 +54,21 @@ L.TimeLayer = L.CanvasLayer.extend({
 
   sql: function(sql, callback) {
     var self = this;
-    this.base_url = 'http://tiles.cartocdn.com/' + this.options.user + '/api/v2/sql';
+    this.base_url = 'http://a.netdna.cartocdn.com/' + this.options.user + '/api/v2/sql';
 
     $.getJSON(this.base_url + "?q=" + encodeURIComponent(sql), function (data) {
         callback(data);
     });
   },
 
-  get_time_range: function(callback) {
-    var self = this;
-    if(self.options.start_date != undefined) callback(self.options.start_date);
+  tile: function(x, y, z, options, callback) {
+    var base_url = JATORRE_CND_URL;
+    //'http://cartobbva.vizzuality.netdna-cdn.com/'
+    //var base_url = 'http://development.localhost.lan:5000/'
 
-    var sql = "SELECT st_xmax(st_envelope(st_collect(the_geom))) xmax,st_ymax(st_envelope(st_collect(the_geom))) ymax, st_xmin(st_envelope(st_collect(the_geom))) xmin, st_ymin(st_envelope(st_collect(the_geom))) ymin, date_part('epoch',max({0})) max, date_part('epoch',min({0})) min FROM {1}".format(this.options.column, this.options.table);
-
-    this.sql(sql, function (data) {
-      var p = data.rows[0];
-      self.options.start_date = p.min;
-      callback(self.options.start_date);
-          //p.max
+    $.getJSON(base_url + "tiles/anim/" + z + "/" + x + "/" + y + ".torque.json?start_date=" + options.start_date + "&end_date=" + options.end_date, function (data) {
+        callback(data);
     });
-
   },
 
   get_time_data: function (coord, zoom) {
@@ -80,7 +84,7 @@ L.TimeLayer = L.CanvasLayer.extend({
     // se contains the deforestation for each entry in sd
     // take se and sd as a matrix [se|sd]
     var numTiles = 1 << zoom;
-
+    /*
     var sql = "WITH hgrid AS ( " +
     "    SELECT CDB_RectangleGrid( " +
     "       CDB_XYZ_Extent({0}, {1}, {2}), ".format(coord.x, coord.y, zoom) +
@@ -103,7 +107,13 @@ L.TimeLayer = L.CanvasLayer.extend({
     "    GROUP BY " +
     "        hgrid.cell, floor((date_part('epoch',{0}) - {1})/{2})".format(self.options.column, self.options.start_date, self.options.step) +
     " ) f GROUP BY x, y";
+
     self.sql(sql, function (data) {
+      var time_data = self.pre_cache_months(data.rows, coord, zoom);
+      self._tileLoaded(coord, time_data);
+    });*/
+
+    self.tile(coord.x, coord.y, zoom, self.options, function (data) {
       var time_data = self.pre_cache_months(data.rows, coord, zoom);
       self._tileLoaded(coord, time_data);
     });
@@ -219,9 +229,19 @@ L.TimeLayer = L.CanvasLayer.extend({
 
   },
 
+  setTime: function(d) {
+    this.realTime = d.getTime()/(15*60*1000) - this.options.start_date/(15*60);
+    this.time = this.realTime>>0;
+  },
+
+  resetTime: function() {
+    this.time = this.realTime= 0;
+  },
+
   getTime: function() {
-    return new Date(1000*(this.options.start_date + this.time*15*60));
+    return new Date(1000*(this.options.start_date + this.realTime*15*60));
   }
+
 
 
 

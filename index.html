@@ -77,7 +77,8 @@
 
     <div id="cover">
       <div class="wrapper">
-        <div class="preview"></div>
+        <div class="preview" style="display: none"></div>
+        <div class="loading">LOADING</div>
         <div class="textBlock">
           <h1>The economic effect of the MWC on Barcelona.</h1>
           <h2>A visual analysis of credit card transactions before and during Mobile World Congress to reveal the economic impact on the city.</h2>
@@ -92,5 +93,18 @@
     </div>
 
     <script src="js/app.js"></script>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-20934186-11']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
   </body>
 </html>

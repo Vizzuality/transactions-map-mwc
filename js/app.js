@@ -3,12 +3,16 @@ BALLS_COLOR_ES = 'rgba(0, 255,255, 0.06)';
 BALLS_COLOR_NO_ES = 'rgba(255, 0 ,255, 0.06)';
 BALL_SIZE_GAIN = 0.92; // ball size is greater when this value is increased
 BALL_ANIMATION_SPEED = 2; // no more than 5
+JATORRE_CND_URL = 'http://cartobbva.vizzuality.netdna-cdn.com/';
+START_OFFSET_HOURS = 10;
+//JATORRE_CND_URL = 'http://development.localhost.lan:5000/';
+
 
 var daysAbv = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 var lastSelectedDay = 'SUN';
 var MENU_TOGGLE_SIZE = 210;
 var staticMapsURLs = {
-  staticDefault: 'http://tiles.cartocdn.com/saleiva2/api/v1/viz/186/viz.json'
+  staticDefault: 'js/viz.json'
 }
 
 
@@ -46,17 +50,23 @@ Map.prototype.init = function(done) {
   }
 
   cartodb.createVis(this.options.el, staticMapsURLs.staticDefault, {
-        sql: this._queryForDay(this.options.day),
         cartodb_logo: false,
-        zoom: 13
+        zoom: 13,
+        no_cdn: true
   }).done(function(vis, layers) {
     self.map = vis.getNativeMap();
+    /*self.map.setOptions({
+      maxZoom: 13
+    });*/
     self.zoom = vis.getOverlay('zoom');
     self.staticLayer = layers[1];
     self.dinamycLayer = new L.TimeLayer(options);
     self.map.removeLayer(self.staticLayer);
     self.map.addLayer(self.dinamycLayer);
     $('.leaflet-control-attribution').fadeOut();
+
+    var d = self.dinamycLayer.getTime();
+    self.dinamycLayer.setTime(new Date(d.getTime() + START_OFFSET_HOURS*60*60*1000));
     done && done();
   });
 
@@ -84,7 +94,10 @@ Map.prototype._queryForDay = function(d) {
 }
 
 Map.prototype.changeDate = function(day){
-  this.staticLayer.setQuery(this._queryForDay(day));
+  //this.staticLayer.setQuery(this._queryForDay(day));
+  this.staticLayer.options.extra_params.day = this.options.dates[day];
+  this.staticLayer.__update();//setQuery(null); //hack to reload tiles without changing the timestamp
+  this.staticLayer.redraw();
 }
 
 var mapL,mapR;
@@ -93,7 +106,6 @@ var dynamic = true;
 
 $('.menuBar a.swtichButton').bind('click', function(){toggleMenu()});
 $('#buttonContainer ul li a').bind('click', toggleMaps);
-$('#cover').bind('click', toggleCover);
 $('.aboutTab a').bind('click', toggleCover);
 $('#daySelector').change(changeDate)
 
@@ -112,7 +124,7 @@ mapL = new Map({
     SAT: '25'
   },
   start: new Date(2012, 1, 19),
-  end: new Date(2012, 1, 25)
+  end: new Date(2012, 1, 26)
 });
 
 mapR = new Map({
@@ -128,7 +140,7 @@ mapR = new Map({
     SAT: '03'
   },
   start: new Date(2012, 1, 26),
-  end: new Date(2012, 2, 3)
+  end: new Date(2012, 2, 4)
 });
 
 
@@ -183,6 +195,12 @@ AnimationController.prototype.render = function() {
     m.dinamycLayer._render(Math.min(0.2, delta));
   });
   if(this.playing) requestAnimationFrame(this.render);
+  var t = this.maps[1].dinamycLayer.getTime().getTime();
+  // restart the animation
+  if(new Date(2012, 2, 4).getTime() < t) {
+    this.maps[0].dinamycLayer.resetTime();
+    this.maps[1].dinamycLayer.resetTime();
+  }
   this.update_ui();
 }
 
@@ -191,7 +209,8 @@ AnimationController.prototype.update_ui= function() {
   var d1 = this.maps[1].dinamycLayer.getTime();
   $('#day').html(daysAbv[d.getDay()]);
   $('#hour .hours').html(d.getHours().pad(2));
-  increaseNumber($('#hour .minutes'),d.getMinutes(),3,58);
+  $('#hour .minutes').html(d.getMinutes().pad(2));
+  //increaseNumber($('#hour .minutes'),d.getMinutes(),3,58);
   this.charts[0].set_time(d);
   this.charts[1].set_time(d1);
 }
@@ -205,6 +224,19 @@ Number.prototype.pad = function (len) {
 var animation;
 mapL.init(function() {
   mapR.init(function() {
+
+    var c = 2;
+    var loaded = function() {
+      if(!--c) {
+        $('#cover').bind('click', toggleCover);
+        $('.loading').hide();
+        $('.preview').fadeIn();
+      }
+    }
+
+    mapL.dinamycLayer.on('tilesLoaded', loaded);
+    mapR.dinamycLayer.on('tilesLoaded', loaded);
+
     // link map movement
     mapL.map.on('moveend', function(e) {
         changeMapState(mapL.map, mapR.map)
@@ -237,7 +269,7 @@ mapL.init(function() {
         start_date: new Date(2012, 1, 19).getTime()/1000,
         base_date: new Date(2012, 1, 19).getTime()/1000,
         foreground: data[0],
-        background: data[1],
+        background: data[1]
 
       });
 
@@ -246,7 +278,7 @@ mapL.init(function() {
         start_date: new Date(2012, 1, 26).getTime()/1000,
         base_date: new Date(2012, 1, 19).getTime()/1000,
         foreground: data[1],
-        background: data[0],
+        background: data[0]
       });
 
       animation = new AnimationController([mapL, mapR], [chartL, chartR]);
@@ -266,6 +298,7 @@ function chart_data(options, callback) {
   this.options.column = options.column || 'date';
   this.options.step = options.steo || 15*60;
 
+  /*
   var sql = "select floor((date_part('epoch',{0}) - {1})/{2}) as date, sum(amount_es) as sum_es, sum(amount_world) as sum_w ".format(self.options.column, self.options.start_date, self.options.step)  + 
             "    FROM {0} i ".format(self.options.table) + 
             "    WHERE " +
@@ -275,8 +308,10 @@ function chart_data(options, callback) {
             "        floor((date_part('epoch',{0}) - {1})/{2})".format(self.options.column, self.options.start_date, self.options.step) + 
             "    ORDER BY " +
             "        floor((date_part('epoch',{0}) - {1})/{2})".format(self.options.column, self.options.start_date, self.options.step) ;
+            */
 
-  d3.json("http://tiles.cartocdn.com/saleiva2/api/v2/sql?q=" + encodeURIComponent(sql), function(data) {
+  //d3.json("http://a.netdna.cartocdn.com/saleiva2/api/v2/sql?q=" + encodeURIComponent(sql), function(data) {
+  d3.json(JATORRE_CND_URL + 'chart?start_date=' + this.options.start_date + "&end_date=" + this.options.end_date, function(data) {
     data = data.rows;
 
     var s = options.weeks[0][0].getTime()/1000
@@ -348,8 +383,15 @@ Chart.prototype.update_marker_pos = function(d) {
   var c = this.animCanvas;
   var tbase = ((d.getTime()/1000) - this.options.base_date)/(15*60);
   c.width = c.width;
-  var y = this.timeMap[tbase]
-  if(y) {
+
+  var v0 = this.timeMap[tbase>> 0]
+  var v1 = this.timeMap[(tbase + 1) >> 0]
+
+  var interpol = tbase - (tbase>>0);
+
+  if(v0 && v1) {
+    var size = 3;
+    var s2 = size;
     t = chart.xScale()(d);
     var ctx = c.getContext('2d');
 
@@ -357,24 +399,27 @@ Chart.prototype.update_marker_pos = function(d) {
     var y0 = chart.height();
     ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
     ctx.beginPath();
-    ctx.rect(t,0,1,y0);
+    ctx.rect(t, 0, 1, y0);
     ctx.closePath();
     ctx.fill();
 
-    y0 = chart.yScale()(y[0]);
-    y1 = chart.yScale()(y[1]+y[0]);
+    y0 = chart.yScale()(v0[0]);
+    y1 = chart.yScale()(v1[0]);
+    y0 += interpol*(y1 - y0);
 
-    var size = 3;
-    var s2 = size;
     ctx.fillStyle = 'rgba(49, 191, 255, 1)';
     ctx.beginPath();
     ctx.arc(t, y0, size, 0, Math.PI*2, true, true);
     ctx.closePath();
     ctx.fill();
 
+    y0 = chart.yScale()(v0[0] + v0[1]);
+    y1 = chart.yScale()(v1[0] + v1[1]);
+    y0 += interpol*(y1 - y0);
+
     ctx.fillStyle = 'rgba(255, 0, 255, 1)';
     ctx.beginPath();
-    ctx.arc(t, y1, size, 0, Math.PI*2, true, true);
+    ctx.arc(t, y0, size, 0, Math.PI*2, true, true);
     ctx.closePath();
     ctx.fill();
   }
@@ -409,6 +454,7 @@ Chart.prototype.set_time = function(d) {
   var chart = this.chart;
 
   var t = ((d.getTime()/1000) - this.options.start_date)/(15*60);
+  t = t >> 0
 
   var left =  -this.container_width*((t/(4*24))>>0);
   if(this.current_pos != left) {
