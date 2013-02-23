@@ -35,7 +35,16 @@ L.TimeLayer = L.CanvasLayer.extend({
     this.on('tileAdded', function(t) {
       this.get_time_data(t, t.zoom);
     }, this);
-    this._render = this._render.bind(this);
+    if(this._render.bind) {
+      this._render = this._render.bind(this);
+    } else {
+      var self = this;
+      var _old_render = this._render;
+      this._render = function() {
+        _old_render.apply(self, arguments);
+      }
+    }
+
     this.MAX_UNITS = this.options.steps + 2;
     this.entities = new Entities(7000);
     this.time = 0;

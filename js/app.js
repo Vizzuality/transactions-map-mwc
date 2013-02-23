@@ -236,7 +236,7 @@ mapL.init(function() {
         start_date: new Date(2012, 1, 19).getTime()/1000,
         base_date: new Date(2012, 1, 19).getTime()/1000,
         foreground: data[0],
-        background: data[1],
+        background: data[1]
 
       });
 
@@ -245,7 +245,7 @@ mapL.init(function() {
         start_date: new Date(2012, 1, 26).getTime()/1000,
         base_date: new Date(2012, 1, 19).getTime()/1000,
         foreground: data[1],
-        background: data[0],
+        background: data[0]
       });
 
       animation = new AnimationController([mapL, mapR], [chartL, chartR]);
