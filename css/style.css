@@ -51,17 +51,18 @@ body{font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; margin: 
 
 .chart {
   position: absolute;
-  width: 680px;
   height: 140px;
 }
 
 .chart.left{
   left: 0;
+  overflow:hidden;
 }
 
 .chart.right{
   right: 0;
-  left: auto;
+  left: 50%;
+  overflow:hidden;
 }
 
 .chart canvas {

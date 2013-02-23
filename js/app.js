@@ -136,6 +136,12 @@ AnimationController.prototype.stop = function() {
   this.playing = false;
 }
 
+AnimationController.prototype.toggle = function() {
+  if(this.playing) this.stop();
+  else this.play();
+}
+
+
 
 AnimationController.prototype.render = function() {
   var now = new Date().getTime();
@@ -170,10 +176,16 @@ mapL.init(function() {
     // link map movement
     mapL.map.on('moveend', function(e) {
         changeMapState(mapL.map, mapR.map)
+    }).on('click', function() {
+      animation.toggle();
     });
+
     mapR.map.on('moveend', function(e) {
         changeMapState(mapR.map, mapL.map)
+    }).on('click', function() {
+      animation.toggle();
     });
+
     mapR.zoom.clean();
     chart_data({
       weeks: [
@@ -187,6 +199,7 @@ mapL.init(function() {
       chartL = new Chart({
         el: '#chart1',
         start_date: new Date(2012, 1, 19).getTime()/1000,
+        base_date: new Date(2012, 1, 19).getTime()/1000,
         foreground: data[0],
         background: data[1],
 
@@ -194,7 +207,8 @@ mapL.init(function() {
 
       chartR = new Chart({
         el: '#chart2',
-        start_date: new Date(2012, 1, 19).getTime()/1000,
+        start_date: new Date(2012, 1, 26).getTime()/1000,
+        base_date: new Date(2012, 1, 19).getTime()/1000,
         foreground: data[1],
         background: data[0],
       });
@@ -254,16 +268,22 @@ function Chart(options) {
   this.options = options;
 
   var chart = timeSeriesChart()
-    .x(function(d) { return new Date(1000*(options.start_date + d.date*15*60)); })
+    .x(function(d) { return new Date(1000*(options.base_date + d.date*15*60)); })
     .y(function(d) { return [+d.sum_es, d.sum_w]; });
 
   this.chart = chart;
 
-  var width = $(options.el).parent().width();
+  this.container_width = $(options.el).parent().width()
+  var width = this.container_width*6; //days
+
+  d3.select(options.el)
+    .datum(options.background) 
+    .call(chart.only_stroke(true).stroke_opacity(0.3).width(width))
 
   d3.select(options.el)
     .datum(options.foreground) 
     .call(chart.only_stroke(false).stroke_opacity(1).width(width))
+
 
   
   var canvas = d3.select(options.el).append('canvas');
@@ -277,6 +297,7 @@ function Chart(options) {
   }
   this.timeMap = timeMap;
   this.animCanvas = canvas[0][0];
+  this.current_pos = 0;
 
 }
 
@@ -292,7 +313,18 @@ Chart.prototype.set_time = function(d) {
   c.width = c.width;
 
   var t = ((d.getTime()/1000) - this.options.start_date)/(15*60);
-  var y = this.timeMap[t]
+  var tbase = ((d.getTime()/1000) - this.options.base_date)/(15*60);
+
+  var left =  -this.container_width*((t/(4*24))>>0);
+  if(this.current_pos != left) {
+    $(this.options.el).find('canvas').animate({
+      left: left
+    }, 1000);
+    this.current_pos = left;
+  }
+
+
+  var y = this.timeMap[tbase]
   if(y) {
     t = chart.xScale()(d);
     var ctx = c.getContext('2d');
