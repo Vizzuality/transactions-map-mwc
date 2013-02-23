@@ -1,7 +1,7 @@
 function timeSeriesChart() {
-  var margin = {top: 20, right: 20, bottom: 20, left: 20},
+  var margin = {top: 0, right: 0, bottom: 0, left: 0},
       width = 680,
-      height = 100,
+      height = 140,
       xValue = function(d) { return d[0]; },
       yValue = function(d) { return d[1]; },
       xScale = d3.time.scale(),
@@ -29,7 +29,7 @@ function timeSeriesChart() {
       // Update the y-scale.
       yScale
           .domain([0, max])
-          .range([height - 3, 0]);
+          .range([height - 3, 20]);
 
       // Select the svg element, if it exists.
       //var svg = d3.select(this).selectAll("svg").data([data]);
