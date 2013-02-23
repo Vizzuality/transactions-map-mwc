@@ -74,7 +74,9 @@ body{font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; margin: 
 #cover{position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255,255,255,0.91); z-index: 4; text-align: center;}
 #cover .wrapper{width: 1066px; height: 500px; text-align: left; margin: 105px auto 0 auto;}
 #cover .wrapper .preview{width: 480px; height: 100%; display: inline-block; vertical-align: top; zoom: 1; *display: inline; background: transparent url('../assets/img/coverImg.png') 0 0 no-repeat;}
-#cover .wrapper .preview:hover{ cursor: pointer; }
+#cover .wrapper .preview:hover{cursor: pointer; }
+#cover .wrapper .preview .spinner{position: absolute; top: 276px; left:216px;}
+#cover .wrapper .preview .playBtn{margin: 223px 0 0 170px; border: none; display: none;}
 #cover .wrapper .textBlock{width: 580px; display: inline-block; vertical-align: top; zoom: 1; *display: inline; margin: 66px 0 0 0; font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; color: #333;}
 #cover .wrapper .textBlock h1{font-family: 'proxima_nova_rgbold', Helvetica, Arial, Sans-serif; font-size: 51px; letter-spacing: -1px; line-height: 51px; margin: 0 0 20px 0;}
 #cover .wrapper .textBlock h2{font-size: 23px; font-weight: normal; margin: 0 0 26px 0;}
