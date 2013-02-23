@@ -1,12 +1,12 @@
 body{font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; margin: 0}
 
 .mapContainer{position: absolute; bottom: 181px; top: 0; z-index: 1;}
-.mapContainer h2{width: 270px; position: absolute; bottom: 20px; left: 25px; z-index: 2; font-size: 17px; color: #FFF; font-weight: regular; line-height: 20px; text-shadow: 0 0 5px #000; margin: 0;}
+.mapContainer h2{width: 270px; position: absolute; bottom: 20px; left: 20px; z-index: 2; font-size: 17px; color: #FFF; font-weight: regular; line-height: 20px; text-shadow: 0 0 5px #000; margin: 0;}
 .mapContainer .logo{position: absolute; top: 12px; right: 12px; display: block; width: 190px; height: 47px; background: transparent url('../assets/img/bbva_map_logo.png') 0 0 no-repeat;}
 
 .left{left: 0; right: 50%;}
 .right{left: 50%; right: 0; text-align: right}
-.right h2{right: 25px;left: auto;}
+.right h2{right: 20px;left: auto;}
 
 .vseparator{position: absolute; top: 38px; bottom: 204px; left: 50%; width: 4px; background-color: #FFF; margin-left: -1px; z-index: 2;}
 .vseparator.dark{position: absolute; bottom: 40px; left: 50%; width: 4px; background-color: #ccc; margin-left: -1px; z-index: 1;}
@@ -44,10 +44,10 @@ body{font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; margin: 
 #buttonContainer ul li a:hover{background-color: #E5E5E5;}
 #buttonContainer ul li a.selected{color: #BBBBBB; background-color: #E5E5E5;}
 #buttonContainer ul li a span{position: absolute; top: 24px; left: 50%; margin: 0 0 0 -35px; display: block; width: 71px; height: 71px;}
-#buttonContainer ul li a.static span{background:transparent url('../assets/img/icons.png') no-repeat 1px 0;}
-#buttonContainer ul li a.static.selected span{background:transparent url('../assets/img/icons.png') no-repeat 1px -71px;}
-#buttonContainer ul li a.time span{background:transparent url('../assets/img/icons.png') no-repeat -70px 0;}
-#buttonContainer ul li a.time.selected span{background:transparent url('../assets/img/icons.png') no-repeat -70px -71px;}
+#buttonContainer ul li a.static span{background:transparent url('../assets/img/icons.png') no-repeat 0 0;}
+#buttonContainer ul li a.static.selected span{background:transparent url('../assets/img/icons.png') no-repeat 0 -71px;}
+#buttonContainer ul li a.time span{background:transparent url('../assets/img/icons.png') no-repeat -71px 0;}
+#buttonContainer ul li a.time.selected span{background:transparent url('../assets/img/icons.png') no-repeat -71px -71px;}
 
 .chart {
   position: absolute;

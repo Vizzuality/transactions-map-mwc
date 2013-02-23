@@ -47,7 +47,8 @@ Map.prototype.init = function(done) {
 
   cartodb.createVis(this.options.el, staticMapsURLs.staticDefault, {
         sql: this._queryForDay(this.options.day),
-        cartodb_logo: false
+        cartodb_logo: false,
+        zoom: 13
   }).done(function(vis, layers) {
     self.map = vis.getNativeMap();
     self.zoom = vis.getOverlay('zoom');
@@ -354,7 +355,7 @@ Chart.prototype.update_marker_pos = function(d) {
 
     var x1 = chart.width();
     var y0 = chart.height();
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
     ctx.beginPath();
     ctx.rect(t,0,1,y0);
     ctx.closePath();
