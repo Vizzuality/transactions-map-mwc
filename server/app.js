@@ -26,10 +26,10 @@ String.prototype.format = (function (i, safe, arg) {
     return format;
 })();
 
-function proxy(url, response) {
+function proxy(url, response, type) {
 
   response.setHeader('Cache-Control', 'public, max-age=31536000');
-  response.setHeader('Content-Type', 'application/json');
+  response.setHeader('Content-Type', type || 'application/json');
   response.header("Access-Control-Allow-Origin", "*");
   response.header("Access-Control-Allow-Headers", "X-Requested-With, X-Prototype-Version, X-CSRF-Token");
 
@@ -111,6 +111,19 @@ app.get('/tiles/anim/:z/:x/:y.torque.json', function(req, response, next) {
 
   var url = SERVER + "api/v2/sql?api_key=" + api_key + "&q=" + encodeURIComponent(TILE_SQL);
   proxy(url, response);
+});
+
+app.get('/tiles/static/:z/:x/:y.png', function(req, response, next) {
+
+  var day = req.query.day;
+  if(!day.match(/^[0-9]+$/)) {
+    response.send("haha, lovely");
+    return;
+  }
+  var sql = "SELECT cartodb_id, customer_country, amount, (select the_geom_webmercator FROM comercios_08_mwc as c WHERE t.business_id =c.id ) as the_geom_webmercator FROM tx_output_08_mwc as t WHERE date_part('day',t.tx_date_proc) =" + day;
+  var tile = "https://saleiva2.cartodb.com/tiles/tx_output_08_mwc/" + req.params.z +"/" + req.params.x + "/" + req.params.y + ".png"
+  proxy(tile + "?sql=" + encodeURIComponent(sql) + "&cache_policy=persist&map_key=" + api_key, response, "image/png");
+
 });
 
 app.get('/chart', function(req, response, next) {

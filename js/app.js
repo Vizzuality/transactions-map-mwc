@@ -49,9 +49,9 @@ Map.prototype.init = function(done) {
   }
 
   cartodb.createVis(this.options.el, staticMapsURLs.staticDefault, {
-        sql: this._queryForDay(this.options.day),
         cartodb_logo: false,
-        zoom: 13
+        zoom: 13,
+        no_cdn: true
   }).done(function(vis, layers) {
     self.map = vis.getNativeMap();
     self.zoom = vis.getOverlay('zoom');
@@ -87,7 +87,8 @@ Map.prototype._queryForDay = function(d) {
 }
 
 Map.prototype.changeDate = function(day){
-  this.staticLayer.setQuery(this._queryForDay(day));
+  //this.staticLayer.setQuery(this._queryForDay(day));
+  this.staticLayer.options.extra_params.day = day;
 }
 
 var mapL,mapR;

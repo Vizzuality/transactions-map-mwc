@@ -1,6 +1,6 @@
 vizjson({
   "version": "0.1.0",
-  "updated_at": "2013-02-22T22:09:17+01:00",
+  "updated_at": "ramboFTW",
   "layers": [{
     "options": {
       "visible": true,
@@ -23,75 +23,29 @@ vizjson({
     "options": {
       "type": "CartoDB",
       "active": true,
-      "query": "SELECT cartodb_id, customer_country, amount, (select the_geom_webmercator FROM comercios_08_mwc as c WHERE t.business_id =c.id ) as the_geom_webmercator FROM tx_output_08_mwc as t WHERE t.tx_date_proc > '2012-03-02T14:00:00+01:00' AND t.tx_date_proc < '2012-03-05T16:30:00+01:00'",
+      "query": "",
       "opacity": 0.99,
       "auto_bound": false,
       "interactivity": "cartodb_id",
       "debug": false,
-      "tiler_domain": "cartodb.com",
-      "tiler_port": "443",
-      "tiler_protocol": "https",
+      "tiler_domain": "vizzuality.netdna-cdn.com",
+      "tiler_port": "80",
+      "tiler_protocol": "http",
       "sql_domain": "cartodb.com",
       "sql_port": "443",
       "sql_protocol": "https",
       "extra_params": {
-        "cache_policy": "persist",
-        "cache_buster": 1361556531085
+        "day": 19
       },
       "cdn_url": "",
       "visible": true,
       "style_version": "2.1.1",
-      "table_name": "tx_output_08_mwc",
-      "user_name": "saleiva2",
+      "table_name": "static",
+      "user_name": "cartobbva",
       "query_wrapper": null
     },
     "kind": "carto",
-    "infowindow": {
-      "fields": [{
-        "name": "amount",
-        "title": true,
-        "position": 2
-      }, {
-        "name": "customer_country",
-        "title": true,
-        "position": 4
-      }],
-      "template_name": "table/views/infowindow_light",
-      "old_fields": [{
-        "name": "business_id",
-        "title": true,
-        "position": 0
-      }, {
-        "name": "card_id",
-        "title": true,
-        "position": 1
-      }, {
-        "name": "amount",
-        "title": true,
-        "position": 2
-      }, {
-        "name": "tx_date_proc",
-        "title": true,
-        "position": 3
-      }, {
-        "name": "customer_country",
-        "title": true,
-        "position": 4
-      }, {
-        "name": "category_id",
-        "title": true,
-        "position": 5
-      }, {
-        "name": "category",
-        "title": true,
-        "position": 6
-      }, {
-        "name": "cartodb_id_comercio",
-        "title": true,
-        "position": 7
-      }],
-      "template": "<div class=\"cartodb-popup\">\n  <a href=\"#close\" class=\"cartodb-popup-close-button close\">x</a>\n  <div class=\"cartodb-popup-content-wrapper\">\n    <div class=\"cartodb-popup-content\">\n      {{#content.fields}}\n        {{#title}}<h4>{{title}}</h4>{{/title}}\n        {{#value}}\n          <p {{#loading}}class=\"loading\"{{/loading}}>{{ value }}</p>\n        {{/value}}\n        {{^value}}\n          <p class=\"empty\">null</p>\n        {{/value}}\n      {{/content.fields}}\n    </div>\n  </div>\n  <div class=\"cartodb-popup-tip-container\"></div>\n</div>\n"
-    },
+    "infowindow": null,
     "id": 118,
     "order": 1
   }],
