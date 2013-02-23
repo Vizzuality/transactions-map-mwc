@@ -3,6 +3,9 @@ BALLS_COLOR_ES = 'rgba(0, 255,255, 0.06)';
 BALLS_COLOR_NO_ES = 'rgba(255, 0 ,255, 0.06)';
 BALL_SIZE_GAIN = 0.92; // ball size is greater when this value is increased
 BALL_ANIMATION_SPEED = 2; // no more than 5
+JATORRE_CND_URL = 'http://cartobbva.vizzuality.netdna-cdn.com/';
+JATORRE_CND_URL = 'http://development.localhost.lan:5000/';
+
 
 var daysAbv = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 var MENU_TOGGLE_SIZE = 210;
@@ -266,6 +269,7 @@ function chart_data(options, callback) {
   this.options.column = options.column || 'date';
   this.options.step = options.steo || 15*60;
 
+  /*
   var sql = "select floor((date_part('epoch',{0}) - {1})/{2}) as date, sum(amount_es) as sum_es, sum(amount_world) as sum_w ".format(self.options.column, self.options.start_date, self.options.step)  + 
             "    FROM {0} i ".format(self.options.table) + 
             "    WHERE " +
@@ -275,8 +279,10 @@ function chart_data(options, callback) {
             "        floor((date_part('epoch',{0}) - {1})/{2})".format(self.options.column, self.options.start_date, self.options.step) + 
             "    ORDER BY " +
             "        floor((date_part('epoch',{0}) - {1})/{2})".format(self.options.column, self.options.start_date, self.options.step) ;
+            */
 
-  d3.json("http://a.netdna.cartocdn.com/saleiva2/api/v2/sql?q=" + encodeURIComponent(sql), function(data) {
+  //d3.json("http://a.netdna.cartocdn.com/saleiva2/api/v2/sql?q=" + encodeURIComponent(sql), function(data) {
+  d3.json(JATORRE_CND_URL + 'chart?start_date=' + this.options.start_date + "&end_date=" + this.options.end_date, function(data) {
     data = data.rows;
 
     var s = options.weeks[0][0].getTime()/1000

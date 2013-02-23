@@ -26,11 +26,33 @@ String.prototype.format = (function (i, safe, arg) {
     return format;
 })();
 
+function proxy(url, response) {
+
+  response.setHeader('Cache-Control', 'public, max-age=31536000');
+  response.setHeader('Content-Type', 'application/json');
+  response.header("Access-Control-Allow-Origin", "*");
+  response.header("Access-Control-Allow-Headers", "X-Requested-With, X-Prototype-Version, X-CSRF-Token");
+
+  https.get(url, function(res) {
+    res.on('data', function (chunk) {
+      response.write(chunk);
+    });
+    res.on('end', function() {
+      response.end();
+    });
+    res.on('error', function() {
+      response.end();
+    });
+  }).on('error',function(e) {
+    console.log(e);
+  });
+}
 
 app.get('/', function(req, response, next) {
+  response.send('RAMBO siempre sera el mejor');
 })
 
-app.get('/tiles/:z/:x/:y.torque.json', function(req, response, next) {
+app.get('/tiles/anim/:z/:x/:y.torque.json', function(req, response, next) {
 
   var coord = {
     x: req.params.x,
@@ -58,10 +80,7 @@ app.get('/tiles/:z/:x/:y.torque.json', function(req, response, next) {
   }
 
   // sanity check
-  try {
-    parseInt(options.start_date, 10)
-    parseInt(options.end_date, 10)
-  } catch(e) {
+  if(!options.start_date.match(/^[0-9]+$/) || !options.end_date.match(/^[0-9]+$/)) {
     response.send("haha, lovely");
     return;
   }
@@ -90,26 +109,51 @@ app.get('/tiles/:z/:x/:y.torque.json', function(req, response, next) {
       " ) f GROUP BY x, y";
 
 
-  response.setHeader('Cache-Control', 'public, max-age=31536000');
-  response.setHeader('Content-Type', 'application/json');
-  response.header("Access-Control-Allow-Origin", "*");
-  response.header("Access-Control-Allow-Headers", "X-Requested-With, X-Prototype-Version, X-CSRF-Token");
-
   var url = SERVER + "api/v2/sql?api_key=" + api_key + "&q=" + encodeURIComponent(TILE_SQL);
-  https.get(url, function(res) {
-    res.on('data', function (chunk) {
-      response.write(chunk);
-    });
-    res.on('end', function() {
-      response.end();
-    });
-    res.on('error', function() {
-      response.end();
-    });
-  }).on('error',function(e) {
-    console.log(e);
-  });
+  proxy(url, response);
 });
+
+app.get('/chart', function(req, response, next) {
+
+ var options = {
+    user : "saleiva2",
+    table : "torque_mwc_2",
+    column : "date",
+    blendmode : 'source-over',
+    trails : false,
+    point_type : 'square',
+    cumulative : true,
+    resolution : 2,
+    steps : 750,
+    step: 15*60,
+    fps : 30,
+    fitbounds : 1,
+    clock : true,
+    countby:'sum(i.amount_es)',
+    start_date: req.query.start_date,
+    end_date: req.query.end_date
+  }
+
+  if(!options.start_date.match(/^[0-9]+$/) || !options.end_date.match(/^[0-9]+$/)) {
+    response.send("haha, lovely");
+    return;
+  }
+
+  var sql = "select floor((date_part('epoch',{0}) - {1})/{2}) as date, sum(amount_es) as sum_es, sum(amount_world) as sum_w ".format(options.column, options.start_date, options.step)  + 
+            "    FROM {0} i ".format(options.table) + 
+            "    WHERE " +
+            "        date_part('epoch',i.{0}) > {1} ".format(options.column, options.start_date) + 
+            "        AND date_part('epoch',i.{0}) < {1} ".format(options.column, options.end_date) + 
+            "    GROUP BY " +
+            "        floor((date_part('epoch',{0}) - {1})/{2})".format(options.column, options.start_date, options.step) + 
+            "    ORDER BY " +
+            "        floor((date_part('epoch',{0}) - {1})/{2})".format(options.column, options.start_date, options.step) ;
+
+
+  var url = SERVER + "api/v2/sql?api_key=" + api_key + "&q=" + encodeURIComponent(sql);
+  proxy(url, response);
+});
+
 
 var port = process.env.PORT || 5000;
 app.listen(port, function() {

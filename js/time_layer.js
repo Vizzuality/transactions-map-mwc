@@ -62,27 +62,13 @@ L.TimeLayer = L.CanvasLayer.extend({
   },
 
   tile: function(x, y, z, options, callback) {
-    var base_url = 'http://cartobbva.vizzuality.netdna-cdn.com/'
+    var base_url = JATORRE_CND_URL;
+    //'http://cartobbva.vizzuality.netdna-cdn.com/'
     //var base_url = 'http://development.localhost.lan:5000/'
 
-    $.getJSON(base_url + "tiles/" + z + "/" + x + "/" + y + ".torque.json?start_date=" + options.start_date + "&end_date=" + options.end_date, function (data) {
+    $.getJSON(base_url + "tiles/anim/" + z + "/" + x + "/" + y + ".torque.json?start_date=" + options.start_date + "&end_date=" + options.end_date, function (data) {
         callback(data);
     });
-  },
-
-  get_time_range: function(callback) {
-    var self = this;
-    if(self.options.start_date != undefined) callback(self.options.start_date);
-
-    var sql = "SELECT st_xmax(st_envelope(st_collect(the_geom))) xmax,st_ymax(st_envelope(st_collect(the_geom))) ymax, st_xmin(st_envelope(st_collect(the_geom))) xmin, st_ymin(st_envelope(st_collect(the_geom))) ymin, date_part('epoch',max({0})) max, date_part('epoch',min({0})) min FROM {1}".format(this.options.column, this.options.table);
-
-    this.sql(sql, function (data) {
-      var p = data.rows[0];
-      self.options.start_date = p.min;
-      callback(self.options.start_date);
-          //p.max
-    });
-
   },
 
   get_time_data: function (coord, zoom) {
