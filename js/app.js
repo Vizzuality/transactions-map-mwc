@@ -23,6 +23,7 @@ function Map(options) {
 
 Map.prototype.init = function(done) {
   var self = this;
+  this.dynamic = true;
 
   var options = {
     user : "saleiva2",
@@ -57,6 +58,16 @@ Map.prototype.init = function(done) {
     done && done();
   });
 
+}
+
+Map.prototype.set_dynamic = function(b) {
+  if(!b) {
+    this.map.removeLayer(this.dinamycLayer);
+    this.map.addLayer(this.staticLayer);
+  } else {
+    this.map.removeLayer(this.staticLayer);
+    this.map.addLayer(this.dinamycLayer);
+  }
 }
 
 Map.prototype.play = function() {
@@ -124,6 +135,7 @@ function AnimationController(maps, charts) {
   this.charts = charts;
   this.render = this.render.bind(this);
   this.playing = false;
+  this.dynamic = true;
 }
 
 AnimationController.prototype.play = function() {
@@ -141,6 +153,20 @@ AnimationController.prototype.toggle = function() {
   else this.play();
 }
 
+AnimationController.prototype.set_dynamic = function(b) {
+  if(!b) {
+    this.stop();
+  } 
+  this.dynamic = b;
+  this.maps.forEach(function(m) {
+    m.set_dynamic(b);
+  });
+  if(b) {
+    //render a tick to update view
+    this.render();
+  }
+
+}
 
 
 AnimationController.prototype.render = function() {
@@ -177,13 +203,17 @@ mapL.init(function() {
     mapL.map.on('moveend', function(e) {
         changeMapState(mapL.map, mapR.map)
     }).on('click', function() {
-      animation.toggle();
+      if(animation.dynamic) {
+        animation.toggle();
+      }
     });
 
     mapR.map.on('moveend', function(e) {
         changeMapState(mapR.map, mapL.map)
     }).on('click', function() {
-      animation.toggle();
+      if(animation.dynamic) {
+        animation.toggle();
+      }
     });
 
     mapR.zoom.clean();
@@ -390,6 +420,8 @@ function toggleMaps(e){
   $('#dateControl').contents().hide();
   $el.show();
   toggleMenu();
+  animation.set_dynamic(dynamic);
+
 }
 
 //Change the date shown in the static maps

@@ -28,13 +28,11 @@ L.CanvasLayer = L.Class.extend({
   onAdd: function (map) {
     this._map = map;
 
-    if (!this._canvas) {
-      this._staticPane = map._createPane('leaflet-tile-pane', map._container);
+    this._canvas = document.createElement('canvas');
+    this._staticPane = map._createPane('leaflet-tile-pane', map._container);
+    this._staticPane.appendChild(this._canvas);
 
-      this._canvas = document.createElement('canvas');
-      this._staticPane.appendChild(this._canvas);
-      this._ctx = this._canvas.getContext('2d');
-    }
+    this._ctx = this._canvas.getContext('2d');
 
     map.on({
         'viewreset': this._reset,
@@ -56,7 +54,10 @@ L.CanvasLayer = L.Class.extend({
 
   onRemove: function (map) {
     map._container.removeChild(this._staticPane);
-    map.off('viewreset', this._reset, this);
+    map.off({
+        'viewreset': this._reset,
+        'move': this._update
+    }, this);
 
     //if (map.options.zoomAnimation) {
       //map.off('zoomanim', this._animateZoom, this);
