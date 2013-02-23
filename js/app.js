@@ -4,6 +4,7 @@ BALLS_COLOR_NO_ES = 'rgba(255, 0 ,255, 0.06)';
 BALL_SIZE_GAIN = 0.92; // ball size is greater when this value is increased
 BALL_ANIMATION_SPEED = 2; // no more than 5
 JATORRE_CND_URL = 'http://cartobbva.vizzuality.netdna-cdn.com/';
+START_OFFSET_HOURS = 6*24 + 20;
 //JATORRE_CND_URL = 'http://development.localhost.lan:5000/';
 
 
@@ -63,6 +64,9 @@ Map.prototype.init = function(done) {
     self.map.removeLayer(self.staticLayer);
     self.map.addLayer(self.dinamycLayer);
     $('.leaflet-control-attribution').fadeOut();
+
+    var d = self.dinamycLayer.getTime();
+    self.dinamycLayer.setTime(new Date(d.getTime() + START_OFFSET_HOURS*60*60*1000));
     done && done();
   });
 
@@ -120,7 +124,7 @@ mapL = new Map({
     SAT: '25'
   },
   start: new Date(2012, 1, 19),
-  end: new Date(2012, 1, 25)
+  end: new Date(2012, 1, 26)
 });
 
 mapR = new Map({
@@ -136,7 +140,7 @@ mapR = new Map({
     SAT: '03'
   },
   start: new Date(2012, 1, 26),
-  end: new Date(2012, 2, 3)
+  end: new Date(2012, 2, 4)
 });
 
 
@@ -191,6 +195,12 @@ AnimationController.prototype.render = function() {
     m.dinamycLayer._render(Math.min(0.2, delta));
   });
   if(this.playing) requestAnimationFrame(this.render);
+  var t = this.maps[1].dinamycLayer.getTime().getTime();
+  // restart the animation
+  if(new Date(2012, 2, 4).getTime() < t) {
+    this.maps[0].dinamycLayer.resetTime();
+    this.maps[1].dinamycLayer.resetTime();
+  }
   this.update_ui();
 }
 
