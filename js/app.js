@@ -199,7 +199,8 @@ AnimationController.prototype.update_ui= function() {
   var d1 = this.maps[1].dinamycLayer.getTime();
   $('#day').html(daysAbv[d.getDay()]);
   $('#hour .hours').html(d.getHours().pad(2));
-  increaseNumber($('#hour .minutes'),d.getMinutes(),3,58);
+  $('#hour .minutes').html(d.getMinutes().pad(2));
+  //increaseNumber($('#hour .minutes'),d.getMinutes(),3,58);
   this.charts[0].set_time(d);
   this.charts[1].set_time(d1);
 }
@@ -372,8 +373,15 @@ Chart.prototype.update_marker_pos = function(d) {
   var c = this.animCanvas;
   var tbase = ((d.getTime()/1000) - this.options.base_date)/(15*60);
   c.width = c.width;
-  var y = this.timeMap[tbase]
-  if(y) {
+
+  var v0 = this.timeMap[tbase>> 0]
+  var v1 = this.timeMap[(tbase + 1) >> 0]
+
+  var interpol = tbase - (tbase>>0);
+
+  if(v0 && v1) {
+    var size = 3;
+    var s2 = size;
     t = chart.xScale()(d);
     var ctx = c.getContext('2d');
 
@@ -381,24 +389,27 @@ Chart.prototype.update_marker_pos = function(d) {
     var y0 = chart.height();
     ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
     ctx.beginPath();
-    ctx.rect(t,0,1,y0);
+    ctx.rect(t, 0, 1, y0);
     ctx.closePath();
     ctx.fill();
 
-    y0 = chart.yScale()(y[0]);
-    y1 = chart.yScale()(y[1]+y[0]);
+    y0 = chart.yScale()(v0[0]);
+    y1 = chart.yScale()(v1[0]);
+    y0 += interpol*(y1 - y0);
 
-    var size = 3;
-    var s2 = size;
     ctx.fillStyle = 'rgba(49, 191, 255, 1)';
     ctx.beginPath();
     ctx.arc(t, y0, size, 0, Math.PI*2, true, true);
     ctx.closePath();
     ctx.fill();
 
+    y0 = chart.yScale()(v0[0] + v0[1]);
+    y1 = chart.yScale()(v1[0] + v1[1]);
+    y0 += interpol*(y1 - y0);
+
     ctx.fillStyle = 'rgba(255, 0, 255, 1)';
     ctx.beginPath();
-    ctx.arc(t, y1, size, 0, Math.PI*2, true, true);
+    ctx.arc(t, y0, size, 0, Math.PI*2, true, true);
     ctx.closePath();
     ctx.fill();
   }
@@ -433,6 +444,7 @@ Chart.prototype.set_time = function(d) {
   var chart = this.chart;
 
   var t = ((d.getTime()/1000) - this.options.start_date)/(15*60);
+  t = t >> 0
 
   var left =  -this.container_width*((t/(4*24))>>0);
   if(this.current_pos != left) {

@@ -230,8 +230,9 @@ L.TimeLayer = L.CanvasLayer.extend({
   },
 
   getTime: function() {
-    return new Date(1000*(this.options.start_date + this.time*15*60));
+    return new Date(1000*(this.options.start_date + this.realTime*15*60));
   }
+
 
 
 
