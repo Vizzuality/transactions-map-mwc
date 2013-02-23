@@ -5,11 +5,11 @@ BALL_SIZE_GAIN = 0.92; // ball size is greater when this value is increased
 BALL_ANIMATION_SPEED = 2; // no more than 5
 
 var daysAbv = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+var lastSelectedDay = 'SUN';
 var MENU_TOGGLE_SIZE = 210;
 var staticMapsURLs = {
   staticDefault: 'http://tiles.cartocdn.com/saleiva2/api/v1/viz/186/viz.json'
 }
-var lastSelectedDay = 'SUN';
 
 
 /** 
