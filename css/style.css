@@ -9,6 +9,7 @@ body{font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; margin: 
 .right h2{right: 25px;left: auto;}
 
 .vseparator{position: absolute; top: 38px; bottom: 204px; left: 50%; width: 4px; background-color: #FFF; margin-left: -1px; z-index: 2;}
+.vseparator.dark{position: absolute; bottom: 40px; left: 50%; width: 4px; background-color: #ccc; margin-left: -1px; z-index: 1;}
 
 .aboutTab{display: block; position: absolute; top: -1px; left: 50%; z-index: 2; width: 40px; height: 40px; background-color:#FFF; border: 1px solid #111; -webkit-border-bottom-right-radius: 20px;-webkit-border-bottom-left-radius: 20px;-moz-border-radius-bottomright: 20px;-moz-border-radius-bottomleft: 20px;border-bottom-right-radius: 20px;border-bottom-left-radius: 20px; margin: 0 0 0 -20px;}
 .aboutTab a, .aboutTab a:visited{position: absolute; bottom: 7px; background-color: #ddd; -webkit-border-radius: 20px; -moz-border-radius: 20px; border-radius: 20px; padding: 5px 10px 2px 10px; margin: 12px 0 0 6px; text-decoration: none; color: #FFF;}
@@ -51,7 +52,7 @@ body{font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; margin: 
 .chart {
   position: absolute;
   width: 680px;
-  height: 120px;
+  height: 140px;
 }
 
 .chart.left{
