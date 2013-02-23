@@ -161,6 +161,9 @@ AnimationController.prototype.set_dynamic = function(b) {
   this.maps.forEach(function(m) {
     m.set_dynamic(b);
   });
+  this.charts.forEach(function(m) {
+    m.set_dynamic(b);
+  });
   if(b) {
     //render a tick to update view
     this.render();
@@ -328,6 +331,7 @@ function Chart(options) {
   this.timeMap = timeMap;
   this.animCanvas = canvas[0][0];
   this.current_pos = 0;
+  this.dynamic = true;
 
 }
 
@@ -336,24 +340,11 @@ Chart.prototype.qty_for_time = function(d) {
   return this.timeMap[t]
 }
 
-Chart.prototype.set_time = function(d) {
-
+Chart.prototype.update_marker_pos = function(d) {
   var chart = this.chart;
   var c = this.animCanvas;
-  c.width = c.width;
-
-  var t = ((d.getTime()/1000) - this.options.start_date)/(15*60);
   var tbase = ((d.getTime()/1000) - this.options.base_date)/(15*60);
-
-  var left =  -this.container_width*((t/(4*24))>>0);
-  if(this.current_pos != left) {
-    $(this.options.el).find('canvas').animate({
-      left: left
-    }, 1000);
-    this.current_pos = left;
-  }
-
-
+  c.width = c.width;
   var y = this.timeMap[tbase]
   if(y) {
     t = chart.xScale()(d);
@@ -384,6 +375,35 @@ Chart.prototype.set_time = function(d) {
     ctx.closePath();
     ctx.fill();
   }
+}
+
+Chart.prototype.set_dynamic = function(d) {
+  this.dynamic = d;
+  if(!d) {
+    $(this.animCanvas).fadeOut()
+  } else {
+    $(this.animCanvas).fadeIn()
+  }
+}
+
+Chart.prototype.set_time = function(d) {
+
+  var chart = this.chart;
+
+  var t = ((d.getTime()/1000) - this.options.start_date)/(15*60);
+
+  var left =  -this.container_width*((t/(4*24))>>0);
+  if(this.current_pos != left) {
+    $(this.options.el).find('canvas').animate({
+      left: left
+    }, 1000);
+    this.current_pos = left;
+  }
+  if(this.dynamic) {
+    this.update_marker_pos(d);
+  }
+
+
 }
 
 //Applies the same view from src to tgt map
