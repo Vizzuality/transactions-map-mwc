@@ -9,12 +9,31 @@ START_OFFSET_HOURS = 10;
 
 
 var daysAbv = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+var lastSelectedDay = 'SUN';
 var MENU_TOGGLE_SIZE = 210;
 var staticMapsURLs = {
   staticDefault: 'js/viz.json'
 }
-var lastSelectedDay = 'SUN';
 
+var opts = {
+  lines: 15, // The number of lines to draw
+  length: 12, // The length of each line
+  width: 8, // The line thickness
+  radius: 50, // The radius of the inner circle
+  corners: 1, // Corner roundness (0..1)
+  rotate: 0, // The rotation offset
+  color: '#fff', // #rgb or #rrggbb
+  speed: 1, // Rounds per second
+  trail: 60, // Afterglow percentage
+  shadow: false, // Whether to render a shadow
+  hwaccel: false, // Whether to use hardware acceleration
+  className: 'spinner', // The CSS class to assign to the spinner
+  zIndex: 2e9, // The z-index (defaults to 2000000000)
+  top: 'auto', // Top position relative to parent in px
+  left: 'auto' // Left position relative to parent in px
+};
+var spinner = new Spinner(opts).spin();
+document.getElementById('bigImg').appendChild(spinner.el);
 
 /** 
  * map class
@@ -210,7 +229,6 @@ AnimationController.prototype.update_ui= function() {
   $('#day').html(daysAbv[d.getDay()]);
   $('#hour .hours').html(d.getHours().pad(2));
   $('#hour .minutes').html(d.getMinutes().pad(2));
-  //increaseNumber($('#hour .minutes'),d.getMinutes(),3,58);
   this.charts[0].set_time(d);
   this.charts[1].set_time(d1);
 }
@@ -229,8 +247,8 @@ mapL.init(function() {
     var loaded = function() {
       if(!--c) {
         $('#cover').bind('click', toggleCover);
-        $('.loading').hide();
-        $('.preview').fadeIn();
+        spinner.stop();
+        $('.playBtn').fadeIn();
       }
     }
 
@@ -510,8 +528,6 @@ function toggleMaps(e){
     //HACK
     changeDate({ target: { value: lastSelectedDay }});
   }
-
-
 }
 
 //Change the date shown in the static maps
@@ -534,15 +550,6 @@ function toggleCover(e){
   animation.toggle();
 }
 
-function increaseNumber(tgt,nto,i,l){
-  var n0 = parseInt(tgt.html());
-  function increase(){
-    if(n0!=nto){
-      n0 = (n0>=l) ? 0 : n0+i;
-      tgt.html(n0.pad(2))
-    }else{
-      clearTimeout(clr);
-    }
-  }
-  var clr = setTimeout(increase, 0);
-}
+
+
+
