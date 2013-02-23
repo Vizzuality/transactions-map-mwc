@@ -3,6 +3,7 @@ L.Mixin.TileLoader = {
 
   _initTileLoader: function() {
     this._tiles = {}
+    this._tilesToLoad = 0;
     this._map.on({
         'moveend': this._updateTiles
     }, this);
@@ -69,7 +70,11 @@ L.Mixin.TileLoader = {
   },
 
   _tileLoaded: function(tilePoint, tileData) {
+    this._tilesToLoad--;
     this._tiles[tilePoint.x + ':' + tilePoint.y + ':' + tilePoint.zoom] = tileData;
+    if(this._tilesToLoad === 0) {
+      this.fire("tilesLoaded");
+    }
   },
 
   _addTilesFromCenterOut: function (bounds) {

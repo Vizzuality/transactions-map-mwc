@@ -4,7 +4,7 @@ BALLS_COLOR_NO_ES = 'rgba(255, 0 ,255, 0.06)';
 BALL_SIZE_GAIN = 0.92; // ball size is greater when this value is increased
 BALL_ANIMATION_SPEED = 2; // no more than 5
 JATORRE_CND_URL = 'http://cartobbva.vizzuality.netdna-cdn.com/';
-JATORRE_CND_URL = 'http://development.localhost.lan:5000/';
+//JATORRE_CND_URL = 'http://development.localhost.lan:5000/';
 
 
 var daysAbv = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
@@ -54,6 +54,9 @@ Map.prototype.init = function(done) {
         no_cdn: true
   }).done(function(vis, layers) {
     self.map = vis.getNativeMap();
+    /*self.map.setOptions({
+      maxZoom: 13
+    });*/
     self.zoom = vis.getOverlay('zoom');
     self.staticLayer = layers[1];
     self.dinamycLayer = new L.TimeLayer(options);
@@ -88,7 +91,9 @@ Map.prototype._queryForDay = function(d) {
 
 Map.prototype.changeDate = function(day){
   //this.staticLayer.setQuery(this._queryForDay(day));
-  this.staticLayer.options.extra_params.day = day;
+  this.staticLayer.options.extra_params.day = this.options.dates[day];
+  this.staticLayer.__update();//setQuery(null); //hack to reload tiles without changing the timestamp
+  this.staticLayer.redraw();
 }
 
 var mapL,mapR;
@@ -97,7 +102,6 @@ var dynamic = true;
 
 $('.menuBar a.swtichButton').bind('click', function(){toggleMenu()});
 $('#buttonContainer ul li a').bind('click', toggleMaps);
-$('#cover').bind('click', toggleCover);
 $('.aboutTab a').bind('click', toggleCover);
 $('#daySelector').change(changeDate)
 
@@ -209,6 +213,19 @@ Number.prototype.pad = function (len) {
 var animation;
 mapL.init(function() {
   mapR.init(function() {
+
+    var c = 2;
+    var loaded = function() {
+      if(!--c) {
+        $('#cover').bind('click', toggleCover);
+        $('.loading').hide();
+        $('.preview').fadeIn();
+      }
+    }
+
+    mapL.dinamycLayer.on('tilesLoaded', loaded);
+    mapR.dinamycLayer.on('tilesLoaded', loaded);
+
     // link map movement
     mapL.map.on('moveend', function(e) {
         changeMapState(mapL.map, mapR.map)
