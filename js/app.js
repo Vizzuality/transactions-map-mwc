@@ -210,7 +210,6 @@ AnimationController.prototype.update_ui= function() {
   $('#day').html(daysAbv[d.getDay()]);
   $('#hour .hours').html(d.getHours().pad(2));
   $('#hour .minutes').html(d.getMinutes().pad(2));
-  //increaseNumber($('#hour .minutes'),d.getMinutes(),3,58);
   this.charts[0].set_time(d);
   this.charts[1].set_time(d1);
 }
@@ -510,8 +509,6 @@ function toggleMaps(e){
     //HACK
     changeDate({ target: { value: lastSelectedDay }});
   }
-
-
 }
 
 //Change the date shown in the static maps
@@ -534,15 +531,3 @@ function toggleCover(e){
   animation.toggle();
 }
 
-function increaseNumber(tgt,nto,i,l){
-  var n0 = parseInt(tgt.html());
-  function increase(){
-    if(n0!=nto){
-      n0 = (n0>=l) ? 0 : n0+i;
-      tgt.html(n0.pad(2))
-    }else{
-      clearTimeout(clr);
-    }
-  }
-  var clr = setTimeout(increase, 0);
-}
