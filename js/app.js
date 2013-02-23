@@ -7,7 +7,7 @@ BALL_ANIMATION_SPEED = 2; // no more than 5
 var daysAbv = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 var MENU_TOGGLE_SIZE = 210;
 var staticMapsURLs = {
-  staticDefault: 'http://saleiva2.cartodb.com/api/v1/viz/186/viz.json'
+  staticDefault: 'js/viz.json'
 }
 var lastSelectedDay = 'SUN';
 
@@ -47,7 +47,8 @@ Map.prototype.init = function(done) {
 
   cartodb.createVis(this.options.el, staticMapsURLs.staticDefault, {
         sql: this._queryForDay(this.options.day),
-        cartodb_logo: false
+        cartodb_logo: false,
+        zoom: 13
   }).done(function(vis, layers) {
     self.map = vis.getNativeMap();
     self.zoom = vis.getOverlay('zoom');
@@ -275,7 +276,7 @@ function chart_data(options, callback) {
             "    ORDER BY " +
             "        floor((date_part('epoch',{0}) - {1})/{2})".format(self.options.column, self.options.start_date, self.options.step) ;
 
-  d3.json("http://saleiva2.cartodb.com/api/v2/sql?q=" + encodeURIComponent(sql), function(data) {
+  d3.json("http://a.netdna.cartocdn.com/saleiva2/api/v2/sql?q=" + encodeURIComponent(sql), function(data) {
     data = data.rows;
 
     var s = options.weeks[0][0].getTime()/1000
@@ -354,7 +355,7 @@ Chart.prototype.update_marker_pos = function(d) {
 
     var x1 = chart.width();
     var y0 = chart.height();
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
     ctx.beginPath();
     ctx.rect(t,0,1,y0);
     ctx.closePath();

@@ -54,7 +54,7 @@ L.TimeLayer = L.CanvasLayer.extend({
 
   sql: function(sql, callback) {
     var self = this;
-    this.base_url = 'http://' + this.options.user + '.cartodb.com/api/v2/sql';
+    this.base_url = 'http://a.netdna.cartocdn.com/' + this.options.user + '/api/v2/sql';
 
     $.getJSON(this.base_url + "?q=" + encodeURIComponent(sql), function (data) {
         callback(data);
