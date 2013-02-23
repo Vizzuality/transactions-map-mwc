@@ -9,6 +9,7 @@ var MENU_TOGGLE_SIZE = 210;
 var staticMapsURLs = {
   staticDefault: 'http://saleiva2.cartodb.com/api/v1/viz/186/viz.json'
 }
+var lastSelectedDay = 'SUN';
 
 
 /** 
@@ -165,7 +166,8 @@ AnimationController.prototype.set_dynamic = function(b) {
     m.set_dynamic(b);
   });
   if(b) {
-    //render a tick to update view
+    // render a tick to update view
+    // hack, of couse
     this.render();
   }
 
@@ -222,8 +224,8 @@ mapL.init(function() {
     mapR.zoom.clean();
     chart_data({
       weeks: [
-        [new Date(2012, 1, 19), new Date(2012, 1, 25)],
-        [new Date(2012, 1, 26), new Date(2012, 2, 3)]
+        [new Date(2012, 1, 19), new Date(2012, 1, 26)],
+        [new Date(2012, 1, 26), new Date(2012, 2, 4)]
       ],
       table: 'torque_mwc_2',
       column: 'date'
@@ -307,7 +309,7 @@ function Chart(options) {
   this.chart = chart;
 
   this.container_width = $(options.el).parent().width()
-  var width = this.container_width*6; //days
+  var width = this.container_width*7; //days
 
   d3.select(options.el)
     .datum(options.background) 
@@ -386,6 +388,21 @@ Chart.prototype.set_dynamic = function(d) {
   }
 }
 
+Chart.prototype.changeDate = function(day) {
+  var dates = {
+    SUN: 0,
+    MON: 1,
+    TUE: 2,
+    WED: 3,
+    THU: 4,
+    FRI: 5,
+    SAT: 6
+  };
+  var days = dates[day];
+  var d = this.options.start_date + days*24*60*60;
+  this.set_time(new Date(d*1000));
+}
+
 Chart.prototype.set_time = function(d) {
 
   var chart = this.chart;
@@ -442,13 +459,22 @@ function toggleMaps(e){
   toggleMenu();
   animation.set_dynamic(dynamic);
 
+  if(!dynamic) {
+    //HACK
+    changeDate({ target: { value: lastSelectedDay }});
+  }
+
+
 }
 
 //Change the date shown in the static maps
 function changeDate(e){
   var _v = e.target.value;
+  lastSelectedDay = _v;
   mapL.changeDate(_v);
   mapR.changeDate(_v);
+  chartL.changeDate(_v);
+  chartR.changeDate(_v);
 }
 
 //Shows/hide cover component
