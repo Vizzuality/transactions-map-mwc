@@ -1,12 +1,12 @@
 body{font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; margin: 0}
 
 .mapContainer{position: absolute; bottom: 181px; top: 0; z-index: 1;}
-.mapContainer h2{width: 270px; position: absolute; bottom: 20px; left: 25px; z-index: 2; font-size: 17px; color: #FFF; font-weight: regular; line-height: 20px; text-shadow: 0 0 5px #000; margin: 0;}
+.mapContainer h2{width: 270px; position: absolute; bottom: 20px; left: 20px; z-index: 2; font-size: 17px; color: #FFF; font-weight: regular; line-height: 20px; text-shadow: 0 0 5px #000; margin: 0;}
 .mapContainer .logo{position: absolute; top: 12px; right: 12px; display: block; width: 190px; height: 47px; background: transparent url('../assets/img/bbva_map_logo.png') 0 0 no-repeat;}
 
 .left{left: 0; right: 50%;}
 .right{left: 50%; right: 0; text-align: right}
-.right h2{right: 25px;left: auto;}
+.right h2{right: 20px;left: auto;}
 
 .vseparator{position: absolute; top: 38px; bottom: 204px; left: 50%; width: 4px; background-color: #FFF; margin-left: -1px; z-index: 2;}
 .vseparator.dark{position: absolute; bottom: 40px; left: 50%; width: 4px; background-color: #ccc; margin-left: -1px; z-index: 1;}
@@ -70,12 +70,6 @@ body{font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; margin: 
   top: 0;
   left: 0;
 }
-
-/*#chart1 {
-  position: absolute;
-  left: 100px;
-}*/
-
 
 #cover{position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255,255,255,0.91); z-index: 4; text-align: center;}
 #cover .wrapper{width: 1066px; height: 500px; text-align: left; margin: 105px auto 0 auto;}
