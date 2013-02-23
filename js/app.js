@@ -249,7 +249,7 @@ mapL.init(function() {
       });
 
       animation = new AnimationController([mapL, mapR], [chartL, chartR]);
-      animation.play();
+      //animation.play();
 
     })
 
@@ -484,6 +484,7 @@ function toggleCover(e){
   }else{
     $('#cover').fadeIn();
   }
+  animation.toggle();
 }
 
 function increaseNumber(tgt,nto,i,l){
