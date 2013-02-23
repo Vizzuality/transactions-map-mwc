@@ -61,6 +61,15 @@ L.TimeLayer = L.CanvasLayer.extend({
     });
   },
 
+  tile: function(x, y, z, options, callback) {
+    var base_url = 'http://cartobbva.vizzuality.netdna-cdn.com/'
+    //var base_url = 'http://development.localhost.lan:5000/'
+
+    $.getJSON(base_url + "tiles/" + z + "/" + x + "/" + y + ".torque.json?start_date=" + options.start_date + "&end_date=" + options.end_date, function (data) {
+        callback(data);
+    });
+  },
+
   get_time_range: function(callback) {
     var self = this;
     if(self.options.start_date != undefined) callback(self.options.start_date);
@@ -89,7 +98,7 @@ L.TimeLayer = L.CanvasLayer.extend({
     // se contains the deforestation for each entry in sd
     // take se and sd as a matrix [se|sd]
     var numTiles = 1 << zoom;
-
+    /*
     var sql = "WITH hgrid AS ( " +
     "    SELECT CDB_RectangleGrid( " +
     "       CDB_XYZ_Extent({0}, {1}, {2}), ".format(coord.x, coord.y, zoom) +
@@ -112,7 +121,13 @@ L.TimeLayer = L.CanvasLayer.extend({
     "    GROUP BY " +
     "        hgrid.cell, floor((date_part('epoch',{0}) - {1})/{2})".format(self.options.column, self.options.start_date, self.options.step) +
     " ) f GROUP BY x, y";
+
     self.sql(sql, function (data) {
+      var time_data = self.pre_cache_months(data.rows, coord, zoom);
+      self._tileLoaded(coord, time_data);
+    });*/
+
+    self.tile(coord.x, coord.y, zoom, self.options, function (data) {
       var time_data = self.pre_cache_months(data.rows, coord, zoom);
       self._tileLoaded(coord, time_data);
     });
