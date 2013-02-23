@@ -4,7 +4,7 @@ BALLS_COLOR_NO_ES = 'rgba(255, 0 ,255, 0.06)';
 BALL_SIZE_GAIN = 0.92; // ball size is greater when this value is increased
 BALL_ANIMATION_SPEED = 2; // no more than 5
 JATORRE_CND_URL = 'http://cartobbva.vizzuality.netdna-cdn.com/';
-START_OFFSET_HOURS = 6*24 + 20;
+START_OFFSET_HOURS = 10;
 //JATORRE_CND_URL = 'http://development.localhost.lan:5000/';
 
 
