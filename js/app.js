@@ -259,7 +259,7 @@ function Chart(options) {
 
   this.chart = chart;
 
-  var width = $(options.el).parent().width() - 100;
+  var width = $(options.el).parent().width();
 
   d3.select(options.el)
     .datum(options.foreground) 
@@ -299,9 +299,9 @@ Chart.prototype.set_time = function(d) {
 
     var x1 = chart.width();
     var y0 = chart.height();
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
     ctx.beginPath();
-    ctx.rect(t,0,x1-t,y0);
+    ctx.rect(t,0,1,y0);
     ctx.closePath();
     ctx.fill();
 

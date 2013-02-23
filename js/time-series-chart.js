@@ -1,6 +1,6 @@
 function timeSeriesChart() {
   var margin = {top: 20, right: 20, bottom: 20, left: 20},
-      width = 760,
+      width = 680,
       height = 100,
       xValue = function(d) { return d[0]; },
       yValue = function(d) { return d[1]; },
