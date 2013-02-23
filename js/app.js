@@ -82,6 +82,7 @@ Map.prototype.init = function(done) {
     self.dinamycLayer = new L.TimeLayer(options);
     self.map.removeLayer(self.staticLayer);
     self.map.addLayer(self.dinamycLayer);
+    L.circle([41.37260496341315, 2.1510283648967743], 700, {color:'#fff',weight:'1.5',dashArray:'6,4',fillOpacity:'0'}).addTo(self.map);
     $('.leaflet-control-attribution').fadeOut();
 
     var d = self.dinamycLayer.getTime();
