@@ -7,8 +7,9 @@ BALL_ANIMATION_SPEED = 2; // no more than 5
 var daysAbv = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 var MENU_TOGGLE_SIZE = 210;
 var staticMapsURLs = {
-  staticDefault: 'http://saleiva2.cartodb.com/api/v1/viz/186/viz.json'
+  staticDefault: 'http://tiles.cartocdn.com/saleiva2/api/v1/viz/186/viz.json'
 }
+var lastSelectedDay = 'SUN';
 
 
 /** 
@@ -23,6 +24,7 @@ function Map(options) {
 
 Map.prototype.init = function(done) {
   var self = this;
+  this.dynamic = true;
 
   var options = {
     user : "saleiva2",
@@ -57,6 +59,16 @@ Map.prototype.init = function(done) {
     done && done();
   });
 
+}
+
+Map.prototype.set_dynamic = function(b) {
+  if(!b) {
+    this.map.removeLayer(this.dinamycLayer);
+    this.map.addLayer(this.staticLayer);
+  } else {
+    this.map.removeLayer(this.staticLayer);
+    this.map.addLayer(this.dinamycLayer);
+  }
 }
 
 Map.prototype.play = function() {
@@ -124,6 +136,7 @@ function AnimationController(maps, charts) {
   this.charts = charts;
   this.render = this.render.bind(this);
   this.playing = false;
+  this.dynamic = true;
 }
 
 AnimationController.prototype.play = function() {
@@ -134,6 +147,30 @@ AnimationController.prototype.play = function() {
 
 AnimationController.prototype.stop = function() {
   this.playing = false;
+}
+
+AnimationController.prototype.toggle = function() {
+  if(this.playing) this.stop();
+  else this.play();
+}
+
+AnimationController.prototype.set_dynamic = function(b) {
+  if(!b) {
+    this.stop();
+  } 
+  this.dynamic = b;
+  this.maps.forEach(function(m) {
+    m.set_dynamic(b);
+  });
+  this.charts.forEach(function(m) {
+    m.set_dynamic(b);
+  });
+  if(b) {
+    // render a tick to update view
+    // hack, of couse
+    this.render();
+  }
+
 }
 
 
@@ -170,15 +207,25 @@ mapL.init(function() {
     // link map movement
     mapL.map.on('moveend', function(e) {
         changeMapState(mapL.map, mapR.map)
+    }).on('click', function() {
+      if(animation.dynamic) {
+        animation.toggle();
+      }
     });
+
     mapR.map.on('moveend', function(e) {
         changeMapState(mapR.map, mapL.map)
+    }).on('click', function() {
+      if(animation.dynamic) {
+        animation.toggle();
+      }
     });
+
     mapR.zoom.clean();
     chart_data({
       weeks: [
-        [new Date(2012, 1, 19), new Date(2012, 1, 25)],
-        [new Date(2012, 1, 26), new Date(2012, 2, 3)]
+        [new Date(2012, 1, 19), new Date(2012, 1, 26)],
+        [new Date(2012, 1, 26), new Date(2012, 2, 4)]
       ],
       table: 'torque_mwc_2',
       column: 'date'
@@ -187,6 +234,7 @@ mapL.init(function() {
       chartL = new Chart({
         el: '#chart1',
         start_date: new Date(2012, 1, 19).getTime()/1000,
+        base_date: new Date(2012, 1, 19).getTime()/1000,
         foreground: data[0],
         background: data[1],
 
@@ -194,13 +242,14 @@ mapL.init(function() {
 
       chartR = new Chart({
         el: '#chart2',
-        start_date: new Date(2012, 1, 19).getTime()/1000,
+        start_date: new Date(2012, 1, 26).getTime()/1000,
+        base_date: new Date(2012, 1, 19).getTime()/1000,
         foreground: data[1],
         background: data[0],
       });
 
       animation = new AnimationController([mapL, mapR], [chartL, chartR]);
-      animation.play();
+      //animation.play();
 
     })
 
@@ -226,7 +275,7 @@ function chart_data(options, callback) {
             "    ORDER BY " +
             "        floor((date_part('epoch',{0}) - {1})/{2})".format(self.options.column, self.options.start_date, self.options.step) ;
 
-  d3.json("http://saleiva2.cartodb.com/api/v2/sql?q=" + encodeURIComponent(sql), function(data) {
+  d3.json("http://tiles.cartocdn.com/saleiva2/api/v2/sql?q=" + encodeURIComponent(sql), function(data) {
     data = data.rows;
 
     var s = options.weeks[0][0].getTime()/1000
@@ -254,16 +303,22 @@ function Chart(options) {
   this.options = options;
 
   var chart = timeSeriesChart()
-    .x(function(d) { return new Date(1000*(options.start_date + d.date*15*60)); })
+    .x(function(d) { return new Date(1000*(options.base_date + d.date*15*60)); })
     .y(function(d) { return [+d.sum_es, d.sum_w]; });
 
   this.chart = chart;
 
-  var width = $(options.el).parent().width();
+  this.container_width = $(options.el).parent().width()
+  var width = this.container_width*7; //days
+
+  d3.select(options.el)
+    .datum(options.background) 
+    .call(chart.only_stroke(true).stroke_opacity(0.3).width(width))
 
   d3.select(options.el)
     .datum(options.foreground) 
     .call(chart.only_stroke(false).stroke_opacity(1).width(width))
+
 
   
   var canvas = d3.select(options.el).append('canvas');
@@ -277,6 +332,8 @@ function Chart(options) {
   }
   this.timeMap = timeMap;
   this.animCanvas = canvas[0][0];
+  this.current_pos = 0;
+  this.dynamic = true;
 
 }
 
@@ -285,14 +342,12 @@ Chart.prototype.qty_for_time = function(d) {
   return this.timeMap[t]
 }
 
-Chart.prototype.set_time = function(d) {
-
+Chart.prototype.update_marker_pos = function(d) {
   var chart = this.chart;
   var c = this.animCanvas;
+  var tbase = ((d.getTime()/1000) - this.options.base_date)/(15*60);
   c.width = c.width;
-
-  var t = ((d.getTime()/1000) - this.options.start_date)/(15*60);
-  var y = this.timeMap[t]
+  var y = this.timeMap[tbase]
   if(y) {
     t = chart.xScale()(d);
     var ctx = c.getContext('2d');
@@ -322,6 +377,50 @@ Chart.prototype.set_time = function(d) {
     ctx.closePath();
     ctx.fill();
   }
+}
+
+Chart.prototype.set_dynamic = function(d) {
+  this.dynamic = d;
+  if(!d) {
+    $(this.animCanvas).fadeOut()
+  } else {
+    $(this.animCanvas).fadeIn()
+  }
+}
+
+Chart.prototype.changeDate = function(day) {
+  var dates = {
+    SUN: 0,
+    MON: 1,
+    TUE: 2,
+    WED: 3,
+    THU: 4,
+    FRI: 5,
+    SAT: 6
+  };
+  var days = dates[day];
+  var d = this.options.start_date + days*24*60*60;
+  this.set_time(new Date(d*1000));
+}
+
+Chart.prototype.set_time = function(d) {
+
+  var chart = this.chart;
+
+  var t = ((d.getTime()/1000) - this.options.start_date)/(15*60);
+
+  var left =  -this.container_width*((t/(4*24))>>0);
+  if(this.current_pos != left) {
+    $(this.options.el).find('canvas').animate({
+      left: left
+    }, 1000);
+    this.current_pos = left;
+  }
+  if(this.dynamic) {
+    this.update_marker_pos(d);
+  }
+
+
 }
 
 //Applies the same view from src to tgt map
@@ -358,13 +457,24 @@ function toggleMaps(e){
   $('#dateControl').contents().hide();
   $el.show();
   toggleMenu();
+  animation.set_dynamic(dynamic);
+
+  if(!dynamic) {
+    //HACK
+    changeDate({ target: { value: lastSelectedDay }});
+  }
+
+
 }
 
 //Change the date shown in the static maps
 function changeDate(e){
   var _v = e.target.value;
+  lastSelectedDay = _v;
   mapL.changeDate(_v);
   mapR.changeDate(_v);
+  chartL.changeDate(_v);
+  chartR.changeDate(_v);
 }
 
 //Shows/hide cover component
@@ -374,6 +484,7 @@ function toggleCover(e){
   }else{
     $('#cover').fadeIn();
   }
+  animation.toggle();
 }
 
 function increaseNumber(tgt,nto,i,l){
