@@ -12,7 +12,8 @@ var daysAbv = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
 var lastSelectedDay = 'SUN';
 var MENU_TOGGLE_SIZE = 210;
 var staticMapsURLs = {
-  staticDefault: 'js/viz.json'
+  staticDefault: 'js/viz.json',
+  staticHere: 'js/viz_here.json'
 }
 
 var opts = {
@@ -67,8 +68,14 @@ Map.prototype.init = function(done) {
     start_date: (this.options.start.getTime()/1000)>>0,
     end_date: (this.options.end.getTime()/1000)>>0
   }
-
-  cartodb.createVis(this.options.el, staticMapsURLs.staticDefault, {
+  
+  //base layer selector
+  var baseViz = staticMapsURLs.staticDefault;
+  if (isHere) {
+    baseViz = staticMapsURLs.staticHere;
+  }
+  
+  cartodb.createVis(this.options.el, baseViz, {
         cartodb_logo: false,
         zoom: 13,
         no_cdn: true

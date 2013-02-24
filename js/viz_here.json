@@ -1,0 +1,69 @@
+vizjson({
+  "version": "0.1.0",
+  "updated_at": "ramboFTW",
+  "layers": [{
+    "options": {
+      "visible": true,
+      "type": "Tiled",
+      "name": "MapBox Graphite",
+      "className": "httpsdnvmyeseobdcloudfrontnetvcartodbmapxtxpfzxypng",
+      "base_type": "mapbox_graphite",
+      "urlTemplate": "http://1.maps.nlp.nokia.com/maptile/2.1/maptile/newest/pedestrian.night/{z}/{x}/{y}/256/png8?lg=eng&token=61YWYROufLu_f8ylE0vn0Q&app_id=qIWDkliFCtLntLma2e6O",
+      "read_only": true,
+      "maxZoom": 21,
+      "attribution": "©2012 <a href='http://here.net/services/terms'>Nokia Terms of use</a>, CartoDB <a href='http://cartodb.com/attributions'>attribution</a>",
+      "order": 0,
+      "id": 117
+    },
+    "kind": "tiled",
+    "infowindow": null,
+    "id": 117,
+    "order": 0
+  }, {
+    "options": {
+      "type": "CartoDB",
+      "active": true,
+      "query": "",
+      "opacity": 0.99,
+      "auto_bound": false,
+      "interactivity": null,
+      "debug": false,
+      "tiler_domain": "vizzuality.netdna-cdn.com",
+      "tiler_port": "80",
+      "tiler_protocol": "http",
+      "sql_domain": "cartodb.com",
+      "sql_port": "443",
+      "sql_protocol": "https",
+      "extra_params": {
+        "day": 19
+      },
+      "cdn_url": "",
+      "visible": true,
+      "style_version": "2.1.1",
+      "table_name": "static",
+      "user_name": "cartobbva",
+      "query_wrapper": null
+    },
+    "kind": "carto",
+    "infowindow": null,
+    "id": 118,
+    "order": 1
+  }],
+  "overlays": [{
+    "type": "zoom",
+    "template": "<a class=\"zoom_in\">+</a><a class=\"zoom_out\">-</a>"
+  }, {
+    "type": "loader",
+    "template": "<div class=\"loader\"></div>"
+  }],
+  "description": null,
+  "title": "tx_output_08_mwc",
+  "url": "http://saleiva2.cartodb.com/tables/186",
+  "map_provider": "leaflet",
+  "bounds": [
+    [41.36830648157063, 2.1041393280029297],
+    [41.40623522801421, 2.2277355194091797]
+  ],
+  "center": "[41.38727362052774, 2.1659374237060547]",
+  "zoom": 14
+})
