@@ -2,7 +2,7 @@ body{font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; margin: 
 
 .mapContainer{position: absolute; bottom: 181px; top: 0; z-index: 1;}
 .mapContainer h2{width: 270px; position: absolute; bottom: 20px; left: 20px; z-index: 2; font-size: 17px; color: #FFF; font-weight: regular; line-height: 20px; text-shadow: 0 0 5px #000; margin: 0;}
-.mapContainer .logo{position: absolute; top: 12px; right: 12px; display: block; width: 190px; height: 47px; background: transparent url('../assets/img/bbva_map_logo.png') 0 0 no-repeat;}
+.mapContainer .logo{position: absolute; top: 12px; right: 12px; display: block; width: 210px; height: 90px; background: transparent url('../assets/img/bbva_map_logo.png') 0 0 no-repeat;}
 
 .left{left: 0; right: 50%;}
 .right{left: 50%; right: 0; text-align: right}
@@ -93,12 +93,12 @@ body{font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; margin: 
 #cover .wrapper .preview .spinner{position: absolute; top: 276px; left:216px;}
 #cover .wrapper .preview .playBtn{margin: 223px 0 0 170px; border: none; display: none;}
 #cover .wrapper .textBlock{width: 580px; display: inline-block; vertical-align: top; zoom: 1; *display: inline; margin: 78px 0 0 0; font-family: 'proxima_novasemibold', Helvetica, Arial, Sans-serif; color: #333;}
-#cover .wrapper .textBlock h1{font-family: 'proxima_nova_rgbold', Helvetica, Arial, Sans-serif; font-size: 51px; letter-spacing: -1px; line-height: 51px; margin: 0 0 20px 0;}
+#cover .wrapper .textBlock h1{font-family: 'proxima_nova_rgbold', Helvetica, Arial, Sans-serif; font-size: 51px; letter-spacing: -1px; line-height: 51px; margin: 0 0 24px 0;}
 #cover .wrapper .textBlock h2{font-size: 23px; font-weight: normal; margin: 0 0 26px 0;}
 #cover .wrapper .textBlock p{font-size: 15px; color: #666;}
 #cover .wrapper .textBlock ul.logos{padding: 0; margin: 30px 0 0 0;}
 #cover .wrapper .textBlock ul.logos li{display: inline-block; vertical-align: top; zoom: 1; *display: inline; list-style-type: none;}
 #cover .wrapper .textBlock ul.logos li a, .logos li a:visited{display: block; height: 63px; font-family: 'proxima_nova_rgbold', Helvetica, Arial, Sans-serif; font-size: 11px; text-decoration: none; color: #ccc;}
 #cover .wrapper .textBlock ul.logos li a:hover{color: #666;}
-#cover .wrapper .textBlock ul.logos .bbva{width: 143px; background: transparent url('../assets/img/bbva_logo.png') 0 15px no-repeat;}
-#cover .wrapper .textBlock ul.logos .cartodb{width: 170px; background: transparent url('../assets/img/cartodb_logo.png') 0 15px no-repeat;}
+#cover .wrapper .textBlock ul.logos .bbva{width: 143px; background: transparent url('../assets/img/bbva_logo.png') 0 18px no-repeat;}
+#cover .wrapper .textBlock ul.logos .cartodb{width: 194px; background: transparent url('../assets/img/cartodb_logo.png') 0 20px no-repeat;}
