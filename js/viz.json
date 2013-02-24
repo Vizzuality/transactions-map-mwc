@@ -26,7 +26,7 @@ vizjson({
       "query": "",
       "opacity": 0.99,
       "auto_bound": false,
-      "interactivity": "cartodb_id",
+      "interactivity": null,
       "debug": false,
       "tiler_domain": "vizzuality.netdna-cdn.com",
       "tiler_port": "80",
