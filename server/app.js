@@ -26,6 +26,17 @@ String.prototype.format = (function (i, safe, arg) {
     return format;
 })();
 
+
+function check_params(params) {
+  for(var i in params) {
+    var p = params[i];
+    if(!p.match(/^[0-9]+$/)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 function proxy(url, response, type) {
 
   response.setHeader('Cache-Control', 'public, max-age=31536000');
@@ -80,7 +91,7 @@ app.get('/tiles/anim/:z/:x/:y.torque.json', function(req, response, next) {
   }
 
   // sanity check
-  if(!options.start_date.match(/^[0-9]+$/) || !options.end_date.match(/^[0-9]+$/)) {
+  if(!check_params([options.start_date, options.end_date, coord.x, coord.y, zoom])) {
     response.send("haha, lovely");
     return;
   }
@@ -116,7 +127,8 @@ app.get('/tiles/anim/:z/:x/:y.torque.json', function(req, response, next) {
 app.get('/tiles/static/:z/:x/:y.png', function(req, response, next) {
 
   var day = req.query.day;
-  if(!day.match(/^[0-9]+$/)) {
+  var coord = req.params
+  if(!check_params([day, coord.x, coord.y, coord.z])) {
     response.send("haha, lovely");
     return;
   }
@@ -147,7 +159,7 @@ app.get('/chart', function(req, response, next) {
     end_date: req.query.end_date
   }
 
-  if(!options.start_date.match(/^[0-9]+$/) || !options.end_date.match(/^[0-9]+$/)) {
+  if(!check_params([options.start_date, options.end_date])) {
     response.send("haha, lovely");
     return;
   }
