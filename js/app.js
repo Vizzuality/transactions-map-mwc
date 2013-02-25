@@ -34,6 +34,7 @@ var opts = {
   left: 'auto' // Left position relative to parent in px
 };
 var spinner = new Spinner(opts).spin();
+var special_browsers = $.browser.mobile;
 document.getElementById('bigImg').appendChild(spinner.el);
 
 /** 
@@ -84,16 +85,23 @@ Map.prototype.init = function(done) {
     /*self.map.setOptions({
       maxZoom: 13
     });*/
+
     self.zoom = vis.getOverlay('zoom');
     self.staticLayer = layers[1];
     self.dinamycLayer = new L.TimeLayer(options);
-    self.map.removeLayer(self.staticLayer);
-    self.map.addLayer(self.dinamycLayer);
-    L.circle([41.37260496341315, 2.1510283648967743], 700, {color:'#fff',weight:'2',dashArray:'6,8',fillOpacity:'0'}).addTo(self.map);
-    $('.leaflet-control-attribution').fadeOut();
 
-    var d = self.dinamycLayer.getTime();
-    self.dinamycLayer.setTime(new Date(d.getTime() + START_OFFSET_HOURS*60*60*1000));
+    // IE or mobile/tablets devices
+    if (special_browsers) {
+      setStatic();
+    } else {
+      self.map.removeLayer(self.staticLayer);
+      self.map.addLayer(self.dinamycLayer);
+      L.circle([41.37260496341315, 2.1510283648967743], 700, {color:'#fff',weight:'2',dashArray:'6,8',fillOpacity:'0'}).addTo(self.map);
+      $('.leaflet-control-attribution').fadeOut();
+      var d = self.dinamycLayer.getTime();
+      self.dinamycLayer.setTime(new Date(d.getTime() + START_OFFSET_HOURS*60*60*1000));
+    }
+
     done && done();
   });
 
@@ -260,8 +268,17 @@ mapL.init(function() {
       }
     }
 
-    mapL.dinamycLayer.on('tilesLoaded', loaded);
-    mapR.dinamycLayer.on('tilesLoaded', loaded);
+    if (special_browsers) {
+      mapL.staticLayer.on('tilesLoaded', loaded);
+      mapR.staticLayer.on('tilesLoaded', loaded);
+      if (mapL.staticLayer._tilesToLoad == 0) {
+        c = 1;
+        loaded();
+      }
+    } else {
+      mapL.dinamycLayer.on('tilesLoaded', loaded);
+      mapR.dinamycLayer.on('tilesLoaded', loaded);
+    }
 
     // link map movement
     mapL.map.on('moveend', function(e) {
@@ -556,6 +573,18 @@ function toggleCover(e){
     $('#cover').fadeIn();
   }
   animation.toggle();
+}
+
+function setStatic() {
+  // Overwrite Animation controller play
+  AnimationController.prototype.play = function() {}
+  // Show day select
+  $('#clock').hide();
+  $('#daySelector').show();
+  // Remove menu
+  $('.menuBar.expandAnimate').remove();
+  // Add new styles
+  $('body').addClass('special')
 }
 
 
