@@ -269,12 +269,9 @@ mapL.init(function() {
     }
 
     if (special_browsers) {
-      mapL.staticLayer.on('tilesLoaded', loaded);
-      mapR.staticLayer.on('tilesLoaded', loaded);
-      if (mapL.staticLayer._tilesToLoad == 0) {
-        c = 1;
-        loaded();
-      }
+      // ...
+      c = 1;
+      loaded();
     } else {
       mapL.dinamycLayer.on('tilesLoaded', loaded);
       mapR.dinamycLayer.on('tilesLoaded', loaded);
