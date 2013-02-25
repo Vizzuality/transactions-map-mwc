@@ -41,6 +41,11 @@ document.getElementById('bigImg').appendChild(spinner.el);
  * map class
  */
 
+// IE checker...
+if ($.browser.msie) {
+  window.location = "ie.html"
+}
+
 function Map(options) {
   this.map = null;
   this.staticLayer = null;
@@ -90,7 +95,7 @@ Map.prototype.init = function(done) {
     self.staticLayer = layers[1];
     self.dinamycLayer = new L.TimeLayer(options);
 
-    // IE or mobile/tablets devices
+    // Mobile/tablets devices
     if (special_browsers) {
       setStatic();
     } else {
